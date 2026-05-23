@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚉 Estação de Conversão — Kit de Estudos Cap. 5</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 50%, #2d4a6e 100%);
+    color: #e8eef5;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.5;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* CAPA */
+  .capa {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6e 50%, #ff6b1a 100%);
+    border: 3px solid #ff6b1a;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255, 107, 26, 0.4);
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+  }
+  .capa::before {
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      repeating-linear-gradient(90deg, transparent 0, transparent 38px, rgba(255,255,255,0.04) 38px, rgba(255,255,255,0.04) 40px),
+      repeating-linear-gradient(0deg, transparent 0, transparent 38px, rgba(255,255,255,0.04) 38px, rgba(255,255,255,0.04) 40px);
+    animation: trilho 30s linear infinite;
+  }
+  @keyframes trilho {
+    from { transform: translate(0,0); }
+    to { transform: translate(-40px,-40px); }
+  }
+  .capa .badge-mat {
+    display: inline-block;
+    background: #ff6b1a;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 14px;
+    border-radius: 4px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .capa h1 {
+    font-size: 2.4em;
+    color: #fff;
+    text-shadow: 0 0 15px #ff6b1a, 0 0 30px #ff6b1a;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .capa .sub {
+    color: #ffe0c2;
+    font-size: 1.15em;
+    position: relative;
+    margin-bottom: 15px;
+  }
+  .capa .narr {
+    color: #fff;
+    font-size: 1em;
+    font-style: italic;
+    position: relative;
+    border-top: 1px dashed #ffb380;
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  /* INTRO */
+  .intro {
+    background: rgba(10, 25, 41, 0.7);
+    border: 2px solid #3b82c4;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    color: #e8eef5;
+    backdrop-filter: blur(10px);
+  }
+  .intro h2 {
+    color: #a0c8e8;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+  }
+  .intro p { margin-bottom: 8px; }
+  .intro b { color: #ffd23f; }
+
+  /* GRID DE MATERIAIS */
+  .materiais {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .card-material {
+    background: rgba(10, 25, 41, 0.7);
+    border: 2.5px solid;
+    border-radius: 15px;
+    padding: 22px 25px;
+    text-decoration: none;
+    color: #e8eef5;
+    display: block;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  .card-material:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(255, 107, 26, 0.45);
+  }
+  .card-material::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.6s;
+  }
+  .card-material:hover::before { left: 100%; }
+
+  .card-1 { border-color: #ffd23f; }
+  .card-1 .card-titulo { color: #ffe57a; }
+  .card-1:hover { border-color: #fff; }
+
+  .card-2 { border-color: #3b82c4; }
+  .card-2 .card-titulo { color: #7ab8e0; }
+  .card-2:hover { border-color: #b3dcf0; }
+
+  .card-3 { border-color: #ff6b1a; }
+  .card-3 .card-titulo { color: #ffb380; }
+  .card-3:hover { border-color: #ffd6b3; }
+
+  .card-4 { border-color: #ef5350; }
+  .card-4 .card-titulo { color: #ff8a80; }
+  .card-4:hover { border-color: #ffcdd2; }
+
+  .card-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .card-icone {
+    font-size: 2.5em;
+    flex-shrink: 0;
+  }
+  .card-titulo {
+    font-size: 1.4em;
+    font-weight: 900;
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+  }
+  .card-etiqueta {
+    background: rgba(255, 210, 63, 0.2);
+    color: #ffd23f;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    border: 1px solid #ffd23f;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .card-descricao {
+    color: #cfdce8;
+    font-size: 1em;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .card-info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    font-size: 0.9em;
+    color: #a0bcd9;
+  }
+  .card-info span {
+    background: rgba(0,0,0,0.3);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(91, 160, 217, 0.4);
+  }
+
+  .card-acessar {
+    margin-top: 15px;
+    color: #fff;
+    font-weight: 700;
+    text-align: right;
+    font-size: 1em;
+  }
+  .card-acessar::after {
+    content: " →";
+    margin-left: 4px;
+    transition: margin 0.3s;
+  }
+  .card-material:hover .card-acessar::after {
+    margin-left: 12px;
+  }
+
+  /* CRONOGRAMA */
+  .cronograma {
+    background: rgba(10, 25, 41, 0.7);
+    border: 2px solid #2eb872;
+    border-radius: 15px;
+    padding: 22px 25px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+  }
+  .cronograma h2 {
+    color: #8de0b1;
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #2eb872;
+    padding-bottom: 8px;
+  }
+  .dia {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid #2eb872;
+  }
+  .dia-titulo {
+    color: #8de0b1;
+    font-weight: 900;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+  }
+  .dia-conteudo {
+    color: #e8eef5;
+    font-size: 0.95em;
+  }
+  .dia-conteudo b { color: #ffd23f; }
+
+  /* DICA PARA A MÃE */
+  .dica-mae {
+    background: rgba(255, 107, 26, 0.12);
+    border: 2px dashed #ff6b1a;
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 25px;
+    color: #ffe0c2;
+  }
+  .dica-mae h2 {
+    color: #ff6b1a;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dica-mae p { margin-bottom: 8px; font-size: 0.95em; }
+  .dica-mae b { color: #ffd23f; }
+  .dica-mae code {
+    background: rgba(0,0,0,0.4);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    color: #ff8a80;
+    font-weight: 700;
+  }
+
+  /* AVISO */
+  .aviso {
+    background: rgba(255, 210, 63, 0.15);
+    border: 1.5px dashed #ffd23f;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 25px;
+    color: #fff5d0;
+    font-size: 0.95em;
+  }
+  .aviso b { color: #ffd23f; }
+
+  /* RODAPÉ */
+  .rodape {
+    text-align: center;
+    color: #ff6b1a;
+    font-style: italic;
+    padding: 20px;
+    border-top: 1px dashed #ff6b1a;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .capa h1 { font-size: 1.6em; }
+    .card-titulo { font-size: 1.15em; }
+    .card-icone { font-size: 2em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- CAPA -->
+  <div class="capa">
+    <div class="badge-mat">MATEMÁTICA • 7º ANO • CAP. 5</div>
+    <h1>🚉 Estação de Conversão ⚙️</h1>
+    <div class="sub">Kit de Estudos — Transformação de Unidades de Medida</div>
+    <div class="narr">Bem-vinda, jovem aprendiz! Aqui estão os 4 materiais da Estação. Cada terminal te leva mais perto do domínio total das conversões — comprimento, área e tempo! 🛤️</div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="intro">
+    <h2>📜 Como funciona</h2>
+    <p>Este é um <b>kit de estudos completo</b> para a prova de Matemática do 7º ano (Cap. 5 — Transformação de Unidades, pp. 84-105). São <b>4 materiais</b> que se complementam:</p>
+    <p>1️⃣ Estude profundamente com a <b>Leitura Estendida</b>, depois 2️⃣ revise visualmente com o <b>Resumo Interativo</b>, 3️⃣ teste-se com o <b>Simulado</b> e 4️⃣ leve o <b>Mapa Mental impresso</b> no dia da prova.</p>
+    <p>Os materiais em HTML <b>salvam o progresso automaticamente</b> no navegador. Pode fechar e voltar depois — continua de onde parou.</p>
+  </div>
+
+  <!-- AVISO -->
+  <div class="aviso">
+    💾 <b>Sobre o salvamento:</b> o progresso fica salvo no <b>navegador específico</b> que está sendo usado (Chrome do celular ≠ Chrome do computador). Para mover o progresso entre dispositivos, use os botões "📥 Exportar" e "📤 Importar" dentro de cada material.
+  </div>
+
+  <!-- MATERIAIS -->
+  <div class="materiais">
+
+    <a href="matematica_cap5_leitura_estendida.html" class="card-material card-1">
+      <div class="card-cabecalho">
+        <div class="card-icone">📚</div>
+        <div class="card-titulo">Leitura Estendida com Fixação</div>
+        <div class="card-etiqueta">⭐ COMECE AQUI</div>
+      </div>
+      <div class="card-descricao">
+        Aprenda o conteúdo completo dividido em 7 terminais (embarque, comprimento, conversões, área, hectare/alqueire, tempo, operações com tempo), com 24 exercícios de fixação distribuídos. O sistema só libera o próximo terminal quando se acerta pelo menos 70% — ou seja, garante o domínio antes de avançar.
+      </div>
+      <div class="card-info">
+        <span>⏱️ 60-90 min</span>
+        <span>🎯 7 terminais</span>
+        <span>📝 24 exercícios</span>
+        <span>🔒 Bloqueio 70%</span>
+      </div>
+      <div class="card-acessar">Iniciar a jornada</div>
+    </a>
+
+    <a href="matematica_cap5_resumo.html" class="card-material card-2">
+      <div class="card-cabecalho">
+        <div class="card-icone">⚙️</div>
+        <div class="card-titulo">Resumo Interativo</div>
+        <div class="card-etiqueta">🔄 REVISÃO RÁPIDA</div>
+      </div>
+      <div class="card-descricao">
+        Resumo visual em 7 abas com trilhos coloridos, equivalências essenciais, post-its de dica, 5 pegadinhas destacadas e 6 macetes em flip cards. Inclui um glossário com 16 termos. Ideal para revisar antes da prova.
+      </div>
+      <div class="card-info">
+        <span>⏱️ 15-20 min</span>
+        <span>📑 7 abas</span>
+        <span>🎴 6 flip cards</span>
+        <span>📖 Glossário</span>
+      </div>
+      <div class="card-acessar">Abrir o resumo</div>
+    </a>
+
+    <a href="matematica_cap5_simulado.html" class="card-material card-3">
+      <div class="card-cabecalho">
+        <div class="card-icone">🏆</div>
+        <div class="card-titulo">Simulado Interativo</div>
+        <div class="card-etiqueta">⚔️ DUELO FINAL</div>
+      </div>
+      <div class="card-descricao">
+        22 questões inéditas cobrindo todo o conteúdo da prova: comprimento, área, hectare/alqueire, tempo e operações com tempo. Tem gabarito travado por código de liberação (entregue ao adulto responsável) e feedback comentado em cada questão.
+      </div>
+      <div class="card-info">
+        <span>⏱️ 45-60 min</span>
+        <span>📋 22 questões</span>
+        <span>🔑 Código de liberação</span>
+        <span>📊 Feedback completo</span>
+      </div>
+      <div class="card-acessar">Encarar o duelo</div>
+    </a>
+
+    <a href="matematica_cap5_mapa_mental.pdf" class="card-material card-4">
+      <div class="card-cabecalho">
+        <div class="card-icone">🗺️</div>
+        <div class="card-titulo">Mapa Mental (PDF para imprimir)</div>
+        <div class="card-etiqueta">📌 DIA DA PROVA</div>
+      </div>
+      <div class="card-descricao">
+        Folha A4 paisagem com os 3 terminais coloridos (comprimento, área e tempo), réguas de conversão visuais, equivalências-chave e 4 colunas de macetes. Imprima e cole na parede do quarto, ou leve dobrado no caderno no dia da prova!
+      </div>
+      <div class="card-info">
+        <span>🖨️ A4 paisagem</span>
+        <span>📄 1 página</span>
+        <span>🎨 Colorido</span>
+        <span>📌 Para imprimir</span>
+      </div>
+      <div class="card-acessar">Abrir o PDF</div>
+    </a>
+
+  </div>
+
+  <!-- CRONOGRAMA -->
+  <div class="cronograma">
+    <h2>📅 Cronograma sugerido (2 dias)</h2>
+
+    <div class="dia">
+      <div class="dia-titulo">📅 DIA 1 — Aprender e Fixar (~1h30 a 2h)</div>
+      <div class="dia-conteudo">
+        Comece pela <b>Leitura Estendida</b> (60-90 min) percorrendo os 7 terminais na ordem. Depois passe o olho no <b>Resumo Interativo</b> (10-15 min) para começar a fixar.
+      </div>
+    </div>
+
+    <div class="dia">
+      <div class="dia-titulo">📅 DIA 2 — Revisar e Simular (~1h15 a 1h30)</div>
+      <div class="dia-conteudo">
+        Releia o <b>Resumo</b> com atenção, especialmente a aba "Macetes" (15-20 min). Em seguida, faça o <b>Simulado</b> completo (45-60 min) sem consultar nada. No final, revise as questões erradas no gabarito e volte na Leitura Estendida nos terminais com mais erro.
+      </div>
+    </div>
+
+    <div class="dia">
+      <div class="dia-titulo">⚔️ MANHÃ DA PROVA (5-10 min)</div>
+      <div class="dia-conteudo">
+        Apenas uma olhada rápida no <b>Mapa Mental</b> impresso ou nos flip cards de macetes do Resumo. <b>Não estude conteúdo novo!</b> Confie no que estudou.
+      </div>
+    </div>
+  </div>
+
+  <!-- DICA PARA A MÃE -->
+  <div class="dica-mae">
+    <h2>👩 Dica para a mãe</h2>
+    <p><b>Sobre o código de liberação do simulado:</b></p>
+    <p>Quando a estudante terminar o simulado, vai aparecer um código no formato <code>SIM-X-YZ</code> (ex.: <code>SIM-18-KM</code>). O número do meio é o total de acertos — se for ≥ 14 acertos (de 22), a meta foi alcançada (≈ 64%). Você pode então liberar o gabarito digitando o código que ela te mostrar.</p>
+    <p><b>Sobre o regrupamento (assunto mais difícil do capítulo):</b></p>
+    <p>Se ela errar muito as questões de operação com tempo (q. 19, 20, 22), peça para ela voltar especificamente ao Terminal 7 da Leitura Estendida. O regrupamento é a maior pegadinha do capítulo!</p>
+    <p><b>Sobre o Mapa Mental:</b></p>
+    <p>Imprima o PDF colorido (se possível) e cole na parede do quarto de estudo. É a peça que faz toda a diferença no dia da prova, porque ela revê visualmente todas as regras em segundos.</p>
+  </div>
+
+  <!-- RODAPÉ -->
+  <div class="rodape">
+    🚉 Que cada conversão saia certeira e que nenhuma cilada de regrupamento te pegue de surpresa. Boa prova, jovem aprendiz! ⚙️✨
+  </div>
+
+</div>
+
+</body>
+</html>

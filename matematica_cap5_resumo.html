@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚉 ESTAÇÃO DE CONVERSÃO — Transformação de Unidades | 7º ano</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+
+:root {
+  --laranja: #ff6b1a;
+  --laranja-claro: #ffb380;
+  --azul: #3b82c4;
+  --azul-escuro: #1e3a5f;
+  --azul-noite: #0a1929;
+  --branco: #ffffff;
+  --cinza-metal: #5a6473;
+  --cinza-claro: #c8d4e0;
+  --amarelo: #ffd23f;
+  --verde: #2eb872;
+  --vermelho: #ef5350;
+  --roxo: #7c4dff;
+  --fundo: #0a1929;
+  --card: #142a44;
+  --card2: #1c3858;
+  --borda: #2d4a6e;
+  --texto: #e8eef5;
+  --texto-dim: #8aa5c2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(255,107,26,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59,130,196,0.06) 0%, transparent 50%);
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 50%, #2d4a6e 100%);
+  border-bottom: 2px solid var(--laranja);
+  padding: 24px 20px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,107,26,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,107,26,0.04) 40px);
+}
+.header-badge {
+  display: inline-block;
+  background: var(--laranja);
+  color: #000;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 2px;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(22px, 5vw, 40px);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255,107,26,0.5);
+  line-height: 1.1;
+  position: relative;
+}
+h1 span { color: var(--laranja); }
+.subtitle {
+  font-family: 'Exo 2', sans-serif;
+  color: var(--cinza-claro);
+  font-size: 13px;
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+/* ─── NAV TABS ─── */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #0d1f33;
+  border-bottom: 1px solid var(--borda);
+  position: sticky; top: 0; z-index: 100;
+}
+.tab-btn {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  color: var(--texto-dim);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.tab-btn:hover { border-color: var(--laranja); color: var(--laranja); }
+.tab-btn.active {
+  background: var(--laranja);
+  border-color: var(--laranja);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ─── CONTENT ─── */
+.content { padding: 20px 16px; max-width: 880px; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── TERMINAL CARD ─── */
+.terminal {
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+.terminal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.terminal-comp { border-color: rgba(59,130,196,0.4); background: linear-gradient(135deg, rgba(59,130,196,0.06), var(--card)); }
+.terminal-comp::before { background: var(--azul); }
+.terminal-area { border-color: rgba(255,107,26,0.4); background: linear-gradient(135deg, rgba(255,107,26,0.06), var(--card)); }
+.terminal-area::before { background: var(--laranja); }
+.terminal-tempo { border-color: rgba(124,77,255,0.4); background: linear-gradient(135deg, rgba(124,77,255,0.06), var(--card)); }
+.terminal-tempo::before { background: var(--roxo); }
+
+.terminal-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.terminal-icon { font-size: 24px; }
+.terminal-desc { color: var(--cinza-claro); font-size: 13px; margin-bottom: 12px; }
+
+/* ─── GRID ─── */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+
+/* ─── MINI CARD ─── */
+.mini-card {
+  background: var(--card2);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 14px;
+}
+.mini-card h4 {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.mini-card p, .mini-card li { font-size: 13px; color: var(--cinza-claro); line-height: 1.5; }
+.mini-card ul { padding-left: 14px; margin-top: 4px; }
+.mini-card strong { color: #fff; }
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.tag-comp { background: rgba(59,130,196,0.25); color: #7ab8e0; }
+.tag-area { background: rgba(255,107,26,0.25); color: var(--laranja-claro); }
+.tag-tempo { background: rgba(124,77,255,0.25); color: #b39dff; }
+.tag-fator { background: rgba(255,210,63,0.25); color: var(--amarelo); }
+
+/* ─── POST-IT ─── */
+.postit {
+  background: #fff8dc;
+  color: #333;
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  font-size: 13.5px;
+  position: relative;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+  border-left: 4px solid #f9a825;
+  line-height: 1.5;
+}
+.postit::before {
+  content: '📌 DICA DE PROVA';
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: #f57f17;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.postit strong { color: #000; }
+
+/* ─── PEGADINHA ─── */
+.pegadinha {
+  background: rgba(239,83,80,0.1);
+  border: 1px solid rgba(239,83,80,0.5);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.pegadinha::before {
+  content: '⚠️ PEGADINHA DA PROVA';
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--vermelho);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.pegadinha strong { color: #fff; }
+
+/* ─── FLIP CARD ─── */
+.flip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+.flip-wrap { perspective: 800px; height: 150px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.flip-wrap:hover .flip-inner, .flip-wrap.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; inset: 0;
+  border-radius: 8px;
+  padding: 12px;
+  backface-visibility: hidden;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+}
+.flip-front {
+  background: var(--card2);
+  border: 1px solid var(--borda);
+}
+.flip-front .flip-icon { font-size: 28px; margin-bottom: 8px; }
+.flip-front h5 { font-family: 'Orbitron', monospace; font-size: 11px; color: #fff; letter-spacing: 1px; }
+.flip-back {
+  background: var(--card);
+  border: 1px solid var(--laranja);
+  transform: rotateY(180deg);
+}
+.flip-back p { font-size: 12px; color: var(--cinza-claro); line-height: 1.4; }
+.flip-back strong { color: var(--amarelo); }
+.hint { font-size: 10px; color: var(--texto-dim); margin-top: 4px; }
+
+/* ─── SECTION TITLE ─── */
+.sec-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-line {
+  height: 2px;
+  background: linear-gradient(90deg, var(--laranja), transparent);
+  margin-bottom: 20px;
+}
+.sec-intro {
+  color: var(--cinza-claro);
+  font-size: 14px;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+.sec-intro strong { color: #fff; }
+
+/* ─── TRILHO VISUAL ─── */
+.trilho-wrapper {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 18px 14px 12px;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+.trilho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 100%;
+}
+.estacao-vis {
+  background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+  border: 2px solid var(--laranja);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 0.95em;
+  min-width: 50px;
+  text-align: center;
+}
+.estacao-vis.base { border-color: var(--amarelo); background: linear-gradient(135deg, var(--laranja), #c44508); }
+.seta-trilho {
+  color: var(--laranja);
+  font-weight: 900;
+  font-size: 0.85em;
+  font-family: 'Courier New', monospace;
+}
+.trilho-legenda {
+  text-align: center;
+  color: var(--texto-dim);
+  font-size: 0.82em;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* ─── TABELA ─── */
+table.referencia {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  background: var(--card2);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+}
+table.referencia th {
+  background: var(--azul-escuro);
+  color: var(--amarelo);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 10px 12px;
+  text-align: center;
+}
+table.referencia td {
+  padding: 8px 12px;
+  border-top: 1px solid var(--borda);
+  text-align: center;
+  color: var(--cinza-claro);
+}
+table.referencia td:first-child { font-weight: 600; color: #fff; }
+
+/* ─── GLOSSARIO ─── */
+.gloss-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+.gloss-item {
+  background: var(--card2);
+  border-left: 3px solid var(--laranja);
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+.gloss-term {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amarelo);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.gloss-def {
+  font-size: 13px;
+  color: var(--cinza-claro);
+  line-height: 1.5;
+}
+.gloss-def strong { color: #fff; }
+
+/* ─── FÓRMULA ─── */
+.formula-box {
+  background: rgba(0,0,0,0.4);
+  border-left: 4px solid var(--laranja);
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: var(--laranja-claro);
+  margin: 12px 0;
+  font-size: 1em;
+  line-height: 1.8;
+}
+.formula-box strong { color: var(--amarelo); }
+
+/* ─── SECTION BADGE ─── */
+.section-badge {
+  display: inline-block;
+  background: var(--card2); border: 1px solid var(--borda);
+  border-radius: 20px; padding: 4px 12px; font-size: 12px;
+  color: var(--cinza-claro); margin-bottom: 16px;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+}
+
+sup { font-size: 75%; vertical-align: super; line-height: 0; }
+sub { font-size: 75%; vertical-align: sub; line-height: 0; }
+
+@media (max-width: 600px) {
+  .estacao-vis { font-size: 0.8em; padding: 6px 7px; min-width: 40px; }
+  .flip-wrap { height: 160px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">MATEMÁTICA • 7º ANO • CAP. 5</div>
+  <h1>🚉 ESTAÇÃO DE<br><span>CONVERSÃO</span></h1>
+  <div class="subtitle">⚙️ Transformação de Unidades de Medida • Comprimento, Área e Tempo</div>
+</div>
+
+<nav class="nav">
+  <button class="tab-btn active" onclick="showTab('intro', event)">🚉 Embarque</button>
+  <button class="tab-btn" onclick="showTab('comprimento', event)">📏 Comprimento</button>
+  <button class="tab-btn" onclick="showTab('area', event)">🟦 Área</button>
+  <button class="tab-btn" onclick="showTab('hectare', event)">🌾 Hectare/Alqueire</button>
+  <button class="tab-btn" onclick="showTab('tempo', event)">⏰ Tempo</button>
+  <button class="tab-btn" onclick="showTab('macetes', event)">⚙️ Macetes</button>
+  <button class="tab-btn" onclick="showTab('glossario', event)">📖 Glossário</button>
+</nav>
+
+<div class="content">
+
+<!-- ═══ INTRO ═══ -->
+<div id="intro" class="section active">
+  <div class="sec-title">🚉 Briefing da Estação</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    Bem-vinda à <strong>Estação de Conversão</strong>! Aqui você vai aprender a transformar medidas de um tipo em outro: 
+    metros em quilômetros, m² em hectares, segundos em horas. Toda a Estação roda em <strong>3 grandes terminais</strong>, 
+    cada um cuidando de um tipo de medida.
+  </p>
+
+  <div class="grid-3">
+    <div class="terminal terminal-comp">
+      <div class="terminal-title">
+        <span class="terminal-icon">📏</span>
+        <span style="color:var(--azul)">TERMINAL 1</span>
+      </div>
+      <div class="terminal-desc">Comprimento</div>
+      <span class="tag tag-comp">UNIDADE BASE: METRO</span>
+      <p style="font-size:12.5px; color:var(--cinza-claro); margin-top: 6px;">Cada casa do trilho = <strong>×10</strong> ou <strong>÷10</strong></p>
+    </div>
+    <div class="terminal terminal-area">
+      <div class="terminal-title">
+        <span class="terminal-icon">🟦</span>
+        <span style="color:var(--laranja)">TERMINAL 2</span>
+      </div>
+      <div class="terminal-desc">Área</div>
+      <span class="tag tag-area">UNIDADE BASE: M²</span>
+      <p style="font-size:12.5px; color:var(--cinza-claro); margin-top: 6px;">Cada casa do trilho = <strong>×100</strong> ou <strong>÷100</strong></p>
+    </div>
+    <div class="terminal terminal-tempo">
+      <div class="terminal-title">
+        <span class="terminal-icon">⏰</span>
+        <span style="color:var(--roxo)">TERMINAL 3</span>
+      </div>
+      <div class="terminal-desc">Tempo</div>
+      <span class="tag tag-tempo">UNIDADE BASE: SEGUNDO</span>
+      <p style="font-size:12.5px; color:var(--cinza-claro); margin-top: 6px;">NÃO usa base 10! Usa <strong>×60</strong> e <strong>×24</strong></p>
+    </div>
+  </div>
+
+  <div class="mini-card" style="margin-top:12px; border-color:rgba(255,107,26,0.4)">
+    <h4 style="color:var(--laranja)">🌍 O QUE É O SISTEMA INTERNACIONAL (SI)?</h4>
+    <p>É o conjunto de unidades padrão usado no mundo inteiro. Define a <strong>unidade-base</strong> de cada tipo de medida (metro, m², segundo, etc.) e os prefixos que viram essa unidade em maior ou menor (quilo, hecto, centi, mili...).</p>
+  </div>
+
+  <div class="grid-2" style="margin-top: 14px;">
+    <div class="mini-card">
+      <h4 style="color:var(--amarelo)">⬆️ MÚLTIPLOS (maiores que a base)</h4>
+      <ul>
+        <li><strong>quilo (k)</strong> = ×1.000 → 1 km = 1.000 m</li>
+        <li><strong>hecto (h)</strong> = ×100 → 1 hm = 100 m</li>
+        <li><strong>deca (da)</strong> = ×10 → 1 dam = 10 m</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4 style="color:var(--amarelo)">⬇️ SUBMÚLTIPLOS (menores que a base)</h4>
+      <ul>
+        <li><strong>deci (d)</strong> = ÷10 → 1 dm = 0,1 m</li>
+        <li><strong>centi (c)</strong> = ÷100 → 1 cm = 0,01 m</li>
+        <li><strong>mili (m)</strong> = ÷1.000 → 1 mm = 0,001 m</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="postit">
+    Os prefixos sempre significam a mesma coisa, não importa a unidade. <strong>Quilo = ×1.000</strong> vale para km, kg, kJ, kL — sempre. Se decorar uma vez, vale para tudo.
+  </div>
+
+  <div class="pegadinha">
+    <strong>Unidade MAIOR → número MENOR.</strong> 5.000 m vira só 5 km. Muita gente erra pensando que vai virar 5.000.000 km. Cuidado: km é uma unidade GRANDE, então cabem MENOS dela na mesma distância.
+  </div>
+</div>
+
+<!-- ═══ COMPRIMENTO ═══ -->
+<div id="comprimento" class="section">
+  <div class="sec-title">📏 Terminal 1 — Medidas de Comprimento</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    Comprimento é a medida de uma <strong>distância em linha</strong>: altura, largura, profundidade, perímetro. 
+    A unidade-base é o <strong>metro (m)</strong>. Todas as outras são múltiplos ou submúltiplos dele.
+  </p>
+
+  <div class="section-badge">🛤️ O TRILHO DO COMPRIMENTO</div>
+
+  <div class="trilho-wrapper">
+    <div class="trilho">
+      <div class="estacao-vis">km</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis">hm</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis">dam</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis base">m</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis">dm</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis">cm</div>
+      <span class="seta-trilho">→×10→</span>
+      <div class="estacao-vis">mm</div>
+    </div>
+    <div class="trilho-legenda">⬅ ÷10 ao voltar &nbsp;|&nbsp; ➡ ×10 ao avançar</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="mini-card">
+      <h4 style="color:var(--azul)">🎯 REGRA DO TRILHO</h4>
+      <ul>
+        <li>Cada casa para a <strong>DIREITA</strong> = <strong>×10</strong></li>
+        <li>Cada casa para a <strong>ESQUERDA</strong> = <strong>÷10</strong></li>
+        <li>2 casas = ×100 ou ÷100</li>
+        <li>3 casas = ×1.000 ou ÷1.000</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4 style="color:var(--azul)">📐 EQUIVALÊNCIAS PARA DECORAR</h4>
+      <ul>
+        <li>1 km = 1.000 m</li>
+        <li>1 m = 100 cm</li>
+        <li>1 m = 1.000 mm</li>
+        <li>1 cm = 10 mm</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">✏️ MACETE DA VÍRGULA</div>
+
+  <div class="formula-box">
+    Multiplicar por 10, 100, 1.000 = anda a vírgula para a <strong>DIREITA</strong><br>
+    Dividir por 10, 100, 1.000 = anda a vírgula para a <strong>ESQUERDA</strong>
+  </div>
+
+  <div class="mini-card">
+    <h4 style="color:var(--amarelo)">📘 EXEMPLOS RESOLVIDOS</h4>
+    <p><strong>2,78 km em m</strong> → 3 casas para a direita → vira <strong>2.780 m</strong></p>
+    <p><strong>50 cm em m</strong> → 2 casas para a esquerda → vira <strong>0,5 m</strong></p>
+    <p><strong>4,5 m em mm</strong> → 3 casas para a direita → vira <strong>4.500 mm</strong></p>
+    <p><strong>1.250 mm em m</strong> → 3 casas para a esquerda → vira <strong>1,25 m</strong></p>
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">📦 OUTRAS UNIDADES (FORA DO SI)</div>
+
+  <table class="referencia">
+    <tr><th>Unidade</th><th>Equivale a</th><th>Onde aparece</th></tr>
+    <tr><td>1 pé</td><td>≈ 30,48 cm</td><td>Altura nos EUA</td></tr>
+    <tr><td>1 polegada</td><td>≈ 2,54 cm</td><td>TVs, telas, canos</td></tr>
+    <tr><td>1 jarda</td><td>≈ 91,44 cm</td><td>Futebol americano</td></tr>
+    <tr><td>1 milha terrestre</td><td>≈ 1.609 m</td><td>Distâncias nos EUA</td></tr>
+    <tr><td>1 milha marítima</td><td>≈ 1.852 m</td><td>Navegação, aviação</td></tr>
+  </table>
+
+  <div class="postit">
+    Uma TV de 50 polegadas tem diagonal de 50 × 2,54 ≈ <strong>127 cm</strong>. Útil pra hora de comprar TV!
+  </div>
+
+  <div class="pegadinha">
+    <strong>NÃO confunda mm com m!</strong> Em problemas com objetos pequenos (parafusos, lápis), o livro às vezes dá as medidas em mm. Antes de calcular, sempre cheque a unidade e converta tudo para a mesma se for somar/comparar.
+  </div>
+</div>
+
+<!-- ═══ ÁREA ═══ -->
+<div id="area" class="section">
+  <div class="sec-title">🟦 Terminal 2 — Medidas de Área</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    Área é o tamanho de uma <strong>superfície plana</strong>: o piso de uma sala, a parede de uma casa, um terreno. 
+    A unidade-base é o <strong>metro quadrado (m²)</strong> — um quadrado de 1 m por 1 m.
+  </p>
+
+  <div class="section-badge">🛤️ O TRILHO DA ÁREA</div>
+
+  <div class="trilho-wrapper">
+    <div class="trilho">
+      <div class="estacao-vis">km²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis">hm²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis">dam²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis base">m²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis">dm²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis">cm²</div>
+      <span class="seta-trilho">→×100→</span>
+      <div class="estacao-vis">mm²</div>
+    </div>
+    <div class="trilho-legenda">⬅ ÷100 ao voltar &nbsp;|&nbsp; ➡ ×100 ao avançar</div>
+  </div>
+
+  <div class="pegadinha">
+    <strong>A DIFERENÇA QUE DERRUBA TODO MUNDO:</strong> em comprimento cada casa = ×10. Em ÁREA, cada casa = <strong>×100</strong>. Esquecer disso é o erro mais comum da prova. Por quê? Porque m² é um quadrado: se o lado vai ×10, a área vai ×10×10 = ×100.
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">🧠 ENTENDA A LÓGICA DO ×100</div>
+
+  <div class="formula-box">
+    1 m² = 1 × 1 m² = 100 × 100 cm² = <strong>10.000 cm²</strong><br>
+    1 km² = 1 × 1 km² = 1.000 × 1.000 m² = <strong>1.000.000 m²</strong><br>
+    1 hm² = 1 × 1 hm² = 100 × 100 m² = <strong>10.000 m²</strong>
+  </div>
+
+  <div class="grid-2">
+    <div class="mini-card">
+      <h4 style="color:var(--laranja)">📐 EQUIVALÊNCIAS-CHAVE</h4>
+      <ul>
+        <li>1 km² = 1.000.000 m²</li>
+        <li>1 hm² = 10.000 m²</li>
+        <li>1 dam² = 100 m²</li>
+        <li>1 m² = 10.000 cm²</li>
+        <li>1 cm² = 100 mm²</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4 style="color:var(--laranja)">📘 EXEMPLOS RESOLVIDOS</h4>
+      <p><strong>2,5 km² em dam²</strong>: 2 casas à direita → ×10.000 → <strong>25.000 dam²</strong></p>
+      <p><strong>50 m² em dam²</strong>: 1 casa à esquerda → ÷100 → <strong>0,5 dam²</strong></p>
+      <p><strong>254 cm² em m²</strong>: 2 casas à esquerda → ÷10.000 → <strong>0,0254 m²</strong></p>
+    </div>
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">📏 PARA QUE SERVE CADA UNIDADE?</div>
+
+  <table class="referencia">
+    <tr><th>Unidade</th><th>Boa para medir</th><th>Exemplo</th></tr>
+    <tr><td>mm²</td><td>coisas minúsculas</td><td>cabeça de alfinete</td></tr>
+    <tr><td>cm²</td><td>cartões, capas de livro</td><td>capa de caderno</td></tr>
+    <tr><td>m²</td><td>cômodos, apartamentos</td><td>quarto, sala</td></tr>
+    <tr><td>hm² (hectare)</td><td>fazendas, parques</td><td>campo de futebol</td></tr>
+    <tr><td>km²</td><td>cidades, países</td><td>bairros, municípios</td></tr>
+  </table>
+
+  <div class="postit">
+    Anúncios de casas, apartamentos e terrenos sempre usam <strong>m²</strong>. Quando ver "apartamento de 100 m²", já sabe: é um quadrado de aproximadamente 10 m × 10 m.
+  </div>
+</div>
+
+<!-- ═══ HECTARE E ALQUEIRE ═══ -->
+<div id="hectare" class="section">
+  <div class="sec-title">🌾 Terminal Rural — Hectare e Alqueire</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    Quando o terreno é GRANDE (fazendas, sítios, chácaras), o m² fica pequeno demais. 
+    Surgem então duas unidades especiais para a zona rural: o <strong>hectare</strong> e o <strong>alqueire</strong>.
+  </p>
+
+  <div class="grid-2">
+    <div class="terminal terminal-area">
+      <div class="terminal-title">
+        <span class="terminal-icon">🟩</span>
+        <span style="color:var(--laranja)">HECTARE (ha)</span>
+      </div>
+      <span class="tag tag-fator">1 ha = 10.000 m²</span>
+      <p style="font-size:13px; color:var(--cinza-claro); margin-top:6px;">É a mesma coisa que <strong>1 hm²</strong>. Equivale a um quadrado de 100 m × 100 m — mais ou menos um <strong>campo de futebol oficial</strong>.</p>
+    </div>
+    <div class="terminal terminal-area">
+      <div class="terminal-title">
+        <span class="terminal-icon">🌽</span>
+        <span style="color:var(--laranja)">ALQUEIRE</span>
+      </div>
+      <span class="tag tag-fator">VARIA POR REGIÃO</span>
+      <p style="font-size:13px; color:var(--cinza-claro); margin-top:6px;">Medida antiga, ainda usada em zonas rurais. Mas atenção: <strong>cada região tem um tamanho diferente</strong>!</p>
+    </div>
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">📊 OS 3 TIPOS DE ALQUEIRE</div>
+
+  <table class="referencia">
+    <tr><th>Tipo</th><th>Equivale a</th><th>Em hectares</th></tr>
+    <tr><td>Alqueire paulista</td><td>24.200 m²</td><td>≈ 2,42 ha</td></tr>
+    <tr><td>Alqueire mineiro</td><td>48.400 m²</td><td>≈ 4,84 ha</td></tr>
+    <tr><td>Alqueire da região Norte</td><td>27.225 m²</td><td>≈ 2,72 ha</td></tr>
+  </table>
+
+  <div class="postit">
+    O alqueire mineiro é exatamente o <strong>DOBRO</strong> do paulista (48.400 = 2 × 24.200). Esse padrão ajuda a lembrar!
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">🧮 COMO RESOLVER PROBLEMAS COM SÍTIOS E FAZENDAS</div>
+
+  <div class="mini-card">
+    <h4 style="color:var(--amarelo)">📘 RECEITA PARA QUALQUER QUESTÃO</h4>
+    <ol style="padding-left: 20px; color: var(--cinza-claro); font-size: 13px; line-height: 1.7;">
+      <li>Identifique a área e a unidade dada (hectares? alqueires? km²?)</li>
+      <li>Converta TUDO para m² (a unidade mais segura para calcular)</li>
+      <li>Faça os cálculos pedidos (preço por m², comparar, etc.)</li>
+      <li>Se a resposta tem que estar em outra unidade, converta de volta no final</li>
+    </ol>
+  </div>
+
+  <div class="mini-card" style="margin-top: 12px;">
+    <h4 style="color:var(--amarelo)">📘 EXEMPLO RESOLVIDO</h4>
+    <p><strong>Um sítio de 7 alqueires paulistas custa R$ 854.000,00. Qual o preço do m²?</strong></p>
+    <p style="margin-top: 8px;">Área em m²: 7 × 24.200 = <strong>169.400 m²</strong></p>
+    <p>Preço por m²: 854.000 ÷ 169.400 ≈ <strong>R$ 5,04 por m²</strong></p>
+  </div>
+
+  <div class="pegadinha">
+    <strong>NUNCA misture hectare com alqueire!</strong> Em questões que comparam dois sítios, sempre converta os dois para a MESMA unidade antes de comparar. Se um está em ha e outro em alqueires, transforme tudo em m².
+  </div>
+
+  <div class="pegadinha">
+    <strong>Cuidado com a palavra "alqueire":</strong> se o problema só fala "alqueire" sem dizer qual, normalmente está se referindo ao <strong>paulista (24.200 m²)</strong>, que é o mais comum. Mas em prova, sempre leia o enunciado com atenção!
+  </div>
+</div>
+
+<!-- ═══ TEMPO ═══ -->
+<div id="tempo" class="section">
+  <div class="sec-title">⏰ Terminal 3 — Medidas de Tempo</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    O Terminal do Tempo é o mais diferente da Estação! Aqui <strong>NÃO funciona</strong> o esquema de ×10 ou ×100. 
+    Tempo usa <strong>base 60</strong>, herdada dos babilônios há mais de 3.500 anos.
+  </p>
+
+  <div class="pegadinha">
+    <strong>NÃO USE A LÓGICA DOS OUTROS TRILHOS AQUI!</strong> A unidade-base do SI para tempo é o <strong>segundo (s)</strong>. Mas as conversões são por 60, não por 10.
+  </div>
+
+  <div class="section-badge">📏 OS MÚLTIPLOS DO SEGUNDO</div>
+
+  <table class="referencia">
+    <tr><th>Unidade</th><th>Equivale a</th></tr>
+    <tr><td>1 minuto (min)</td><td>60 segundos (s)</td></tr>
+    <tr><td>1 hora (h)</td><td>60 min = 3.600 s</td></tr>
+    <tr><td>1 dia (d)</td><td>24 h = 1.440 min = 86.400 s</td></tr>
+  </table>
+
+  <div class="section-badge" style="margin-top: 20px;">🔄 COMO CONVERTER</div>
+
+  <div class="grid-2">
+    <div class="mini-card">
+      <h4 style="color:var(--roxo)">⬇️ DE MAIOR PARA MENOR</h4>
+      <p>MULTIPLICA por 60</p>
+      <ul style="margin-top: 6px;">
+        <li>horas → min: ×60</li>
+        <li>min → seg: ×60</li>
+        <li>horas → seg: ×3.600</li>
+        <li>dias → horas: ×24</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4 style="color:var(--roxo)">⬆️ DE MENOR PARA MAIOR</h4>
+      <p>DIVIDE por 60</p>
+      <ul style="margin-top: 6px;">
+        <li>seg → min: ÷60</li>
+        <li>min → horas: ÷60</li>
+        <li>seg → horas: ÷3.600</li>
+        <li>horas → dias: ÷24</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mini-card" style="margin-top: 14px;">
+    <h4 style="color:var(--amarelo)">📘 EXEMPLOS RESOLVIDOS</h4>
+    <p><strong>3 h em segundos:</strong> 3 × 3.600 = <strong>10.800 s</strong></p>
+    <p><strong>240 s em minutos:</strong> 240 ÷ 60 = <strong>4 min</strong></p>
+    <p><strong>2,5 h em h e min:</strong> 0,5 × 60 = 30 min → <strong>2 h 30 min</strong></p>
+    <p><strong>10.000 s em h, min e s:</strong></p>
+    <p style="padding-left: 18px;">10.000 ÷ 3.600 = 2 h, sobra 2.800 s</p>
+    <p style="padding-left: 18px;">2.800 ÷ 60 = 46 min, sobra 40 s</p>
+    <p style="padding-left: 18px;">Resultado: <strong>2 h 46 min 40 s</strong></p>
+  </div>
+
+  <div class="section-badge" style="margin-top: 20px;">➕ OPERAÇÕES COM TEMPO</div>
+
+  <div class="mini-card">
+    <h4 style="color:var(--roxo)">🔧 SOMA — REGRA GERAL</h4>
+    <p>Soma cada parte separadamente: hora com hora, minuto com minuto, segundo com segundo. Se passar de 60, <strong>REGRUPA</strong>.</p>
+  </div>
+
+  <div class="mini-card" style="margin-top: 10px;">
+    <h4 style="color:var(--amarelo)">📘 EXEMPLO: SOMA COM REGRUPAMENTO</h4>
+    <p><strong>4 h 35 min 45 s + 2 h 24 min 15 s</strong></p>
+    <p style="margin-top: 6px;">Horas: 4 + 2 = 6 h</p>
+    <p>Minutos: 35 + 24 = 59 min</p>
+    <p>Segundos: 45 + 15 = 60 s</p>
+    <p style="margin-top: 6px;">Parcial: 6 h 59 min 60 s</p>
+    <p>Como 60 s = 1 min → vira 6 h 60 min 0 s</p>
+    <p>Como 60 min = 1 h → vira <strong>7 h 0 min 0 s = 7 h</strong></p>
+  </div>
+
+  <div class="pegadinha">
+    <strong>"6 h 59 min 60 s" NÃO é resposta final!</strong> Em tempo, NUNCA pode ficar com 60 (ou mais) nos minutos ou nos segundos. Sempre regrupa até zerar.
+  </div>
+
+  <div class="mini-card" style="margin-top: 10px;">
+    <h4 style="color:var(--roxo)">🔧 SUBTRAÇÃO COM EMPRÉSTIMO</h4>
+    <p><strong>3 h 10 min − 1 h 25 min</strong></p>
+    <p style="margin-top: 6px;">Não dá pra fazer 10 − 25 → pega 1 h emprestada (= 60 min)</p>
+    <p>3 h 10 min vira 2 h 70 min</p>
+    <p>2 h 70 min − 1 h 25 min = <strong>1 h 45 min</strong></p>
+  </div>
+
+  <div class="postit">
+    Para somar ou subtrair tempos rapidinho, transforme TUDO em minutos (ou segundos), faça a conta, e depois converta de volta. Demora mais escrever, mas é à prova de erros.
+  </div>
+</div>
+
+<!-- ═══ MACETES ═══ -->
+<div id="macetes" class="section">
+  <div class="sec-title">⚙️ Macetes da Estação — evite ciladas na prova!</div>
+  <div class="sec-line"></div>
+  <p class="sec-intro">
+    Aqui estão os 6 macetes mais importantes do capítulo, organizados em <strong>flip cards</strong>: 
+    clique em cada um pra ver a dica completa. Use isso como revisão final antes da prova!
+  </p>
+
+  <div class="flip-grid">
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">🎯</div>
+          <h5>REGRA DAS CASAS</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>Comprimento: cada casa = <strong>×10</strong>.<br>Área: cada casa = <strong>×100</strong>.<br>Tempo: NÃO usa casas — usa ×60.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">➡️</div>
+          <h5>DIREÇÃO DA SETA</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>Andou p/ DIREITA = <strong>MULTIPLICA</strong>.<br>Andou p/ ESQUERDA = <strong>DIVIDE</strong>.<br>Conta as casas certo!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">✏️</div>
+          <h5>MACETE DA VÍRGULA</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>×10, ×100, ×1000 = vírgula <strong>p/ DIREITA</strong>.<br>÷10, ÷100, ÷1000 = vírgula <strong>p/ ESQUERDA</strong>. Mesma quantidade de zeros.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">⏰</div>
+          <h5>CILADA DO TEMPO</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>NUNCA fica resposta com 60 ou + nos minutos/segundos. <strong>REGRUPA!</strong> Ex: 6h 59min 60s = 7h.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">🌾</div>
+          <h5>HECTARE × ALQUEIRE</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>1 hectare = <strong>10.000 m²</strong>.<br>Alqueire paulista = 24.200 m².<br>Mineiro = 48.400 (dobro!).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="flip-icon">🧠</div>
+          <h5>UNIDADE × NÚMERO</h5>
+          <div class="hint">clique ↗</div>
+        </div>
+        <div class="flip-back">
+          <p>Unidade MAIOR → número MENOR.<br>5.000 m = 5 km (não 5.000.000!).<br>Sempre cheque se faz sentido.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-badge" style="margin-top: 24px;">⚔️ AS 5 PEGADINHAS MAIS COMUNS NA PROVA</div>
+
+  <div class="pegadinha">
+    <strong>1. Esquecer que área usa ×100 (e não ×10):</strong> "Quanto vale 5 m² em cm²?" Resposta certa: 50.000 cm² (×10.000), não 500.
+  </div>
+
+  <div class="pegadinha">
+    <strong>2. Inverter o sentido da conversão:</strong> "5.000 m em km" → resposta certa é 5 km (DIVIDE), e não 5.000.000 km. Lembre: km é unidade GRANDE.
+  </div>
+
+  <div class="pegadinha">
+    <strong>3. Não regrupar tempo:</strong> Deixar a resposta como "5 h 75 min" ou "6h 59min 60s" — sempre tem que ajustar para que minutos e segundos fiquem abaixo de 60.
+  </div>
+
+  <div class="pegadinha">
+    <strong>4. Misturar hectare e alqueire:</strong> Sempre converta tudo para a mesma unidade (preferencialmente m²) antes de comparar áreas.
+  </div>
+
+  <div class="pegadinha">
+    <strong>5. Esquecer de conferir a unidade pedida:</strong> A questão pode dar dados em metros e pedir resposta em quilômetros. Faça TODO o cálculo, e SÓ NO FINAL converta para a unidade pedida.
+  </div>
+</div>
+
+<!-- ═══ GLOSSÁRIO ═══ -->
+<div id="glossario" class="section">
+  <div class="sec-title">📖 Glossário da Estação</div>
+  <div class="sec-line"></div>
+  <div class="gloss-grid">
+    <div class="gloss-item">
+      <div class="gloss-term">SI (Sistema Internacional)</div>
+      <div class="gloss-def">Conjunto de unidades padrão usadas no mundo todo. Define as unidades-base (m, m², s, kg) e os prefixos (k, h, da, d, c, m).</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Unidade-base</div>
+      <div class="gloss-def">A unidade principal de cada tipo de medida no SI. Para comprimento é o <strong>metro</strong>, para área é o <strong>m²</strong>, para tempo é o <strong>segundo</strong>.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Múltiplo</div>
+      <div class="gloss-def">Unidade <strong>maior</strong> que a base. Ex.: 1 km (= 1.000 m) é múltiplo do metro. Inclui quilo, hecto e deca.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Submúltiplo</div>
+      <div class="gloss-def">Unidade <strong>menor</strong> que a base. Ex.: 1 mm (= 0,001 m) é submúltiplo do metro. Inclui deci, centi e mili.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Prefixo</div>
+      <div class="gloss-def">Letrinha que vem antes da unidade-base e indica quanto multiplicar ou dividir. Ex.: <strong>k</strong>m, <strong>c</strong>m, <strong>m</strong>m.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Conversão</div>
+      <div class="gloss-def">Operação de transformar uma medida em outra unidade do mesmo tipo. Ex.: 2 km → 2.000 m.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Metro quadrado (m²)</div>
+      <div class="gloss-def">Unidade-base de área. É a área de um quadrado que tem 1 m de lado. Aparece em anúncios de imóveis.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Hectare (ha)</div>
+      <div class="gloss-def">Unidade muito usada no Brasil para áreas rurais. <strong>1 ha = 10.000 m² = 1 hm²</strong>. Aproximadamente um campo de futebol.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Alqueire</div>
+      <div class="gloss-def">Medida antiga para áreas rurais brasileiras. <strong>Varia conforme a região</strong>: paulista (24.200 m²), mineiro (48.400 m²), Norte (27.225 m²).</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Polegada</div>
+      <div class="gloss-def">Unidade inglesa de comprimento. <strong>1 polegada ≈ 2,54 cm</strong>. Aparece em telas (TV, celular), canos e parafusos.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Milha terrestre</div>
+      <div class="gloss-def">Unidade inglesa de distância. <strong>1 milha ≈ 1.609 m</strong>. Usada nos EUA e Reino Unido.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Base 60</div>
+      <div class="gloss-def">Sistema de contagem em que cada unidade vale 60 da unidade menor. Usada apenas para <strong>tempo</strong> (60 s = 1 min, 60 min = 1 h).</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Regrupamento</div>
+      <div class="gloss-def">Em operações com tempo, quando minutos ou segundos passam de 60, eles "sobem" para a unidade maior. Ex.: 60 s → 1 min.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Empréstimo</div>
+      <div class="gloss-def">Em subtrações com tempo, quando faltam minutos/segundos para tirar, "pega-se" 60 da unidade maior. Ex.: 3h 10min vira 2h 70min.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Densidade demográfica</div>
+      <div class="gloss-def">Relação entre número de habitantes e área. Medida em <strong>hab./km²</strong>. Ex.: o Brasil tem ≈ 23,86 hab./km².</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Perímetro</div>
+      <div class="gloss-def">Soma de todos os lados de uma figura. É uma medida de <strong>comprimento</strong> (em m, cm, etc.) — não confundir com área!</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+function showTab(id, event) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (event && event.target) event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// Touch flip pra mobile
+document.querySelectorAll('.flip-wrap').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+});
+</script>
+</body>
+</html>

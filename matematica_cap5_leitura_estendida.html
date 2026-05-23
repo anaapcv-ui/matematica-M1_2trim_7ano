@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚉 Leitura Guiada Estendida — Cap. 5</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 50%, #2d4a6e 100%);
+    color: #e8eef5;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  .container { max-width: 950px; margin: 0 auto; }
+
+  /* CAPA */
+  .capa {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6e 50%, #ff6b1a 100%);
+    border: 3px solid #ff6b1a;
+    border-radius: 20px;
+    padding: 30px 25px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255, 107, 26, 0.4);
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+  }
+  .capa::before {
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      repeating-linear-gradient(90deg, transparent 0, transparent 38px, rgba(255,255,255,0.04) 38px, rgba(255,255,255,0.04) 40px),
+      repeating-linear-gradient(0deg, transparent 0, transparent 38px, rgba(255,255,255,0.04) 38px, rgba(255,255,255,0.04) 40px);
+    animation: trilho 30s linear infinite;
+  }
+  @keyframes trilho {
+    from { transform: translate(0,0); }
+    to { transform: translate(-40px,-40px); }
+  }
+  .capa h1 {
+    font-size: 2em;
+    color: #fff;
+    text-shadow: 0 0 15px #ff6b1a;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .capa .sub { color: #ffe0c2; font-size: 1em; position: relative; margin-bottom: 12px; }
+  .capa .narr {
+    color: #fff;
+    font-size: 0.95em;
+    font-style: italic;
+    position: relative;
+    border-top: 1px dashed #ffb380;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  /* PROGRESSO GERAL */
+  .progresso-geral {
+    background: rgba(10, 25, 41, 0.7);
+    border: 2px solid #ff6b1a;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .progresso-info {
+    color: #ffe0c2;
+    font-size: 0.9em;
+  }
+  .progresso-info b { color: #ffd23f; }
+  .progresso-barra-wrap {
+    flex: 1;
+    min-width: 200px;
+    height: 14px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ff6b1a;
+  }
+  .progresso-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b1a, #ffd23f);
+    width: 0%;
+    transition: width 0.6s;
+  }
+
+  /* PAINEL DE SALVAMENTO */
+  .painel-salvar {
+    background: rgba(46, 184, 114, 0.18);
+    border: 2px solid #2eb872;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9em;
+  }
+  .painel-salvar .info-salvar {
+    color: #c5ecd6;
+    flex: 1;
+    min-width: 220px;
+  }
+  .painel-salvar .info-salvar b { color: #fff; }
+  .painel-salvar .auto-salvo::before { content: "💾 "; }
+  .botoes-salvar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-salvar {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid #2eb872;
+    color: #c5ecd6;
+    padding: 6px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 700;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .btn-salvar:hover {
+    background: rgba(46, 184, 114, 0.3);
+    transform: translateY(-1px);
+  }
+  .btn-salvar.zerar {
+    border-color: #ef5350;
+    color: #ffcdd2;
+  }
+  .btn-salvar.zerar:hover {
+    background: rgba(239, 83, 80, 0.3);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    border: 2px solid #2eb872;
+    z-index: 1000;
+    font-weight: 700;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s;
+  }
+  .toast.visivel { transform: translateY(0); opacity: 1; }
+
+  /* MAPA DE SEÇÕES */
+  .mapa-secoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    background: rgba(10, 25, 41, 0.7);
+    border: 2px solid #3b82c4;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+  .mapa-secoes-titulo {
+    width: 100%;
+    text-align: center;
+    color: #a0bcd9;
+    font-size: 0.85em;
+    margin-bottom: 6px;
+  }
+  .mapa-item {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid #3b82c4;
+    color: #8aa5c2;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-size: 0.85em;
+    font-weight: 700;
+    cursor: not-allowed;
+    transition: all 0.3s;
+    opacity: 0.5;
+  }
+  .mapa-item.disponivel {
+    cursor: pointer;
+    opacity: 1;
+    color: #ffe0c2;
+    border-color: #ff6b1a;
+  }
+  .mapa-item.disponivel:hover {
+    background: rgba(255, 107, 26, 0.2);
+    transform: translateY(-2px);
+  }
+  .mapa-item.atual {
+    background: #ff6b1a;
+    color: #0a1929;
+    border-color: #fff;
+  }
+  .mapa-item.concluida {
+    background: rgba(46, 184, 114, 0.4);
+    border-color: #2eb872;
+    color: #fff;
+    opacity: 1;
+  }
+  .mapa-item.concluida::after { content: " ✓"; }
+
+  /* SEÇÕES */
+  .secao {
+    background: rgba(10, 25, 41, 0.7);
+    border: 2px solid #ff6b1a;
+    border-radius: 15px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+    display: none;
+    animation: fadeIn 0.5s;
+  }
+  .secao.ativa { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h2 {
+    color: #ff6b1a;
+    font-size: 1.6em;
+    border-bottom: 2px solid #ff6b1a;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    text-shadow: 0 0 10px rgba(255, 107, 26, 0.5);
+  }
+  h3 {
+    color: #3b82c4;
+    font-size: 1.2em;
+    margin: 18px 0 8px 0;
+    border-left: 4px solid #3b82c4;
+    padding-left: 10px;
+  }
+  h4 {
+    color: #ffd23f;
+    font-size: 1.05em;
+    margin: 12px 0 6px 0;
+  }
+
+  p { margin-bottom: 12px; color: #e8eef5; }
+  p b, li b { color: #ffd23f; }
+  ul, ol { margin: 8px 0 12px 25px; }
+  li { margin-bottom: 5px; color: #e8eef5; }
+
+  /* CONCEITO CARD */
+  .conceito-card {
+    background: linear-gradient(135deg, rgba(59, 130, 196, 0.25), rgba(30, 58, 95, 0.3));
+    border-left: 4px solid #3b82c4;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin: 15px 0;
+  }
+  .conceito-card .titulo {
+    color: #a0c8e8;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1.05em;
+  }
+
+  /* FÓRMULA / TRILHO */
+  .formula {
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 4px solid #ff6b1a;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #ffe0c2;
+    margin: 12px 0;
+    font-size: 1em;
+    line-height: 1.7;
+  }
+
+  /* EXEMPLO */
+  .exemplo {
+    background: rgba(46, 184, 114, 0.15);
+    border: 1.5px solid #2eb872;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+  }
+  .exemplo-titulo {
+    color: #8de0b1;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1em;
+  }
+  .exemplo-titulo::before { content: "📘 "; }
+
+  /* ALERTA */
+  .alerta {
+    background: rgba(183, 28, 28, 0.2);
+    border: 2px solid #ef5350;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .alerta-titulo {
+    color: #ef9a9a;
+    font-weight: 900;
+    margin-bottom: 6px;
+    font-size: 1.05em;
+  }
+
+  /* POST-IT */
+  .post-it {
+    background: rgba(255, 210, 63, 0.2);
+    border: 1.5px dashed #ffd23f;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 12px 0;
+    color: #fff5d0;
+  }
+  .post-it::before {
+    content: "💡 DICA: ";
+    color: #ffd23f;
+    font-weight: 900;
+  }
+
+  /* TRILHO VISUAL — específico do tema */
+  .trilho-wrapper {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid #3b82c4;
+    border-radius: 10px;
+    padding: 18px 14px 12px;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .trilho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 100%;
+  }
+  .estacao {
+    background: linear-gradient(135deg, #1e3a5f, #3b82c4);
+    border: 2px solid #ff6b1a;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 0.95em;
+    min-width: 50px;
+    text-align: center;
+  }
+  .seta-trilho {
+    color: #ff6b1a;
+    font-weight: 900;
+    font-size: 0.85em;
+    font-family: 'Courier New', monospace;
+  }
+  .trilho-legenda {
+    text-align: center;
+    color: #a0bcd9;
+    font-size: 0.82em;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* CAIXA DE FIXAÇÃO */
+  .fixacao-box {
+    background: linear-gradient(135deg, rgba(255, 107, 26, 0.3), rgba(255, 167, 87, 0.2));
+    border: 2.5px solid #ff6b1a;
+    border-radius: 15px;
+    padding: 22px;
+    margin: 25px 0;
+    box-shadow: 0 0 25px rgba(255, 107, 26, 0.3);
+  }
+  .fixacao-titulo {
+    color: #fff;
+    font-size: 1.25em;
+    font-weight: 900;
+    margin-bottom: 8px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255, 107, 26, 0.7);
+  }
+  .fixacao-subtitulo {
+    color: #ffe0c2;
+    text-align: center;
+    font-size: 0.9em;
+    font-style: italic;
+    margin-bottom: 15px;
+  }
+  .fixacao-progresso {
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    padding: 6px 14px;
+    margin: 0 auto 15px auto;
+    width: fit-content;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9em;
+    border: 1px solid #ff6b1a;
+  }
+
+  .exercicio {
+    background: rgba(0,0,0,0.3);
+    border: 2px solid #3b82c4;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .exercicio-num {
+    display: inline-block;
+    background: #ff6b1a;
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 15px;
+    font-weight: 900;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+  }
+  .exercicio-pergunta {
+    color: #fff;
+    margin-bottom: 12px;
+    font-size: 1em;
+  }
+  .exercicio-pergunta b {
+    color: #ffd23f;
+    font-family: 'Courier New', monospace;
+  }
+
+  .alternativas-fix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .alt-fix {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid #3b82c4;
+    color: #e8eef5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    text-align: left;
+    transition: all 0.3s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alt-fix:hover:not(:disabled) {
+    background: rgba(255, 107, 26, 0.2);
+    border-color: #ff6b1a;
+  }
+  .alt-fix .letra {
+    background: rgba(255, 107, 26, 0.3);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    flex-shrink: 0;
+    font-size: 0.85em;
+  }
+  .alt-fix.correta {
+    background: rgba(46, 184, 114, 0.4);
+    border-color: #2eb872;
+  }
+  .alt-fix.correta .letra { background: #2eb872; }
+  .alt-fix.errada {
+    background: rgba(183, 28, 28, 0.4);
+    border-color: #ef5350;
+  }
+  .alt-fix.errada .letra { background: #ef5350; }
+  .alt-fix:disabled { cursor: default; }
+  .alt-fix.desativada { opacity: 0.4; }
+
+  .feedback-fix {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    line-height: 1.45;
+    display: none;
+    animation: fadeIn 0.4s;
+  }
+  .feedback-fix.acerto {
+    background: rgba(46, 184, 114, 0.25);
+    border-left: 3px solid #2eb872;
+    color: #c5ecd6;
+    display: block;
+  }
+  .feedback-fix.erro {
+    background: rgba(183, 28, 28, 0.25);
+    border-left: 3px solid #ef5350;
+    color: #ffcdd2;
+    display: block;
+  }
+  .feedback-fix b { color: #ffd23f; }
+  .feedback-fix .titulo-fb {
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  .resultado-fix {
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: center;
+    display: none;
+  }
+  .resultado-fix.visivel { display: block; animation: fadeIn 0.5s; }
+  .resultado-fix .pontuacao-fix {
+    font-size: 1.4em;
+    font-weight: 900;
+    color: #ffd23f;
+    margin-bottom: 8px;
+  }
+  .resultado-fix .mensagem-fix {
+    color: #ffe0c2;
+    margin-bottom: 12px;
+    font-size: 0.95em;
+  }
+  .resultado-fix .mensagem-fix.bloqueado { color: #ffcdd2; }
+
+  .nav-secao {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .btn-nav {
+    background: linear-gradient(135deg, #3b82c4, #1e3a5f);
+    color: #fff;
+    border: 2px solid #5ca0d9;
+    padding: 12px 22px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95em;
+    transition: all 0.3s;
+    flex: 1;
+    min-width: 140px;
+  }
+  .btn-nav:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(91, 160, 217, 0.5);
+  }
+  .btn-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-proxima {
+    background: linear-gradient(135deg, #2eb872, #1b7d4d) !important;
+    border-color: #8de0b1 !important;
+  }
+  .btn-proxima:disabled {
+    background: linear-gradient(135deg, #424242, #212121) !important;
+    border-color: #555 !important;
+  }
+  .btn-tentar {
+    background: linear-gradient(135deg, #ff6b1a, #c44508) !important;
+    border-color: #ffb380 !important;
+  }
+
+  /* TABELA */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    border: 1px solid rgba(255, 107, 26, 0.4);
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 0.92em;
+  }
+  th {
+    background: rgba(255, 107, 26, 0.3);
+    color: #fff;
+    font-weight: 700;
+  }
+  td { color: #e8eef5; }
+
+  /* NARRATIVA */
+  .narr-box {
+    background: linear-gradient(90deg, rgba(255, 107, 26, 0.15), transparent);
+    border-left: 4px solid #ff6b1a;
+    padding: 12px 18px;
+    margin: 15px 0;
+    color: #ffe0c2;
+    font-style: italic;
+  }
+  .narr-box::before { content: "🚉 "; }
+
+  /* CELEBRAÇÃO FINAL */
+  .celebracao {
+    background: linear-gradient(135deg, #1e3a5f 0%, #ff6b1a 100%);
+    border: 3px solid #ffd23f;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0 0 40px rgba(255, 210, 63, 0.5);
+    animation: brilho 2s ease-in-out infinite alternate;
+  }
+  @keyframes brilho {
+    from { box-shadow: 0 0 40px rgba(255, 210, 63, 0.4); }
+    to { box-shadow: 0 0 60px rgba(255, 210, 63, 0.7); }
+  }
+  .celebracao h2 {
+    color: #ffd23f;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    border: none;
+  }
+  .celebracao .titulo-mago {
+    background: rgba(0,0,0,0.4);
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin: 15px auto;
+    color: #ffd23f;
+    font-size: 1.2em;
+    font-weight: 700;
+    border: 2px solid #ffd23f;
+    max-width: 400px;
+  }
+
+  sup { font-size: 75%; vertical-align: super; line-height: 0; }
+  sub { font-size: 75%; vertical-align: sub; line-height: 0; }
+
+  @media (max-width: 600px) {
+    .alternativas-fix { grid-template-columns: 1fr; }
+    .capa h1 { font-size: 1.5em; }
+    .estacao { font-size: 0.8em; padding: 6px 7px; min-width: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- CAPA -->
+  <div class="capa">
+    <h1>🚉 Leitura Guiada Estendida</h1>
+    <div class="sub">Cap. 5: Transformação de Unidades de Medida • 7º ano • pp. 84–105</div>
+    <div class="narr">🛤️ Bem-vinda à Estação de Conversão, jovem aprendiz! Aqui cada terminal te ensina um tipo de medida — comprimento, área e tempo. Você só avança para o próximo terminal quando dominar o anterior. Embarque, pratique e conquiste!</div>
+  </div>
+
+  <!-- PROGRESSO GERAL -->
+  <div class="progresso-geral">
+    <div class="progresso-info">🚉 Terminal <b id="secao-atual">1</b>/7 • Acertos: <b id="acertos-totais">0</b>/<span id="total-geral">24</span></div>
+    <div class="progresso-barra-wrap"><div class="progresso-fill" id="progresso-fill"></div></div>
+  </div>
+
+  <!-- PAINEL DE SALVAMENTO -->
+  <div class="painel-salvar">
+    <div class="info-salvar">
+      <span class="auto-salvo">Progresso salvo automaticamente neste navegador</span><br>
+      <span style="font-size: 0.85em; opacity: 0.85;">Último salvamento: <b id="ultimo-salvar">—</b></span>
+    </div>
+    <div class="botoes-salvar">
+      <button class="btn-salvar" onclick="exportarProgresso()">📥 Exportar progresso</button>
+      <button class="btn-salvar" onclick="document.getElementById('input-importar').click()">📤 Importar progresso</button>
+      <button class="btn-salvar zerar" onclick="zerarProgresso()">🗑️ Zerar tudo</button>
+      <input type="file" id="input-importar" accept=".json" style="display:none" onchange="importarProgresso(event)">
+    </div>
+  </div>
+
+  <!-- MAPA DE SEÇÕES -->
+  <div class="mapa-secoes">
+    <div class="mapa-secoes-titulo">🗺️ Mapa da Jornada (clique nos terminais desbloqueados)</div>
+    <div class="mapa-item disponivel atual" data-secao="0" onclick="navegar(0)">1. Embarque</div>
+    <div class="mapa-item" data-secao="1" onclick="navegar(1)">2. Comprimento</div>
+    <div class="mapa-item" data-secao="2" onclick="navegar(2)">3. Conv. Comprimento</div>
+    <div class="mapa-item" data-secao="3" onclick="navegar(3)">4. Área</div>
+    <div class="mapa-item" data-secao="4" onclick="navegar(4)">5. Hectare/Alqueire</div>
+    <div class="mapa-item" data-secao="5" onclick="navegar(5)">6. Tempo</div>
+    <div class="mapa-item" data-secao="6" onclick="navegar(6)">7. Op. com Tempo</div>
+  </div>
+
+  <!-- SEÇÃO 1: EMBARQUE -->
+  <div class="secao ativa" id="secao-0">
+    <h2>🚉 Terminal 1 — Embarque na Estação</h2>
+
+    <div class="narr-box">
+      Antes de partir, é preciso entender POR QUE existe uma Estação de Conversão. Por que medimos as coisas em unidades diferentes? E por que precisamos transformá-las umas nas outras?
+    </div>
+
+    <p>Imagine medir a distância entre sua casa e a escola em <b>milímetros</b>. Seriam mais de um milhão deles! Agora imagine medir a espessura de um fio de cabelo em <b>quilômetros</b>. Daria um número minúsculo, impossível de escrever sem milhares de zeros depois da vírgula.</p>
+
+    <p>Por isso existem <b>unidades diferentes</b> para situações diferentes — e o trabalho da Estação de Conversão é fazer a tradução entre elas.</p>
+
+    <h3>🌍 O Sistema Internacional de Unidades (SI)</h3>
+
+    <p>O SI é um conjunto de unidades padrão usado no mundo todo (com poucas exceções, como países de língua inglesa). Cada tipo de medida tem uma <b>unidade-base</b>:</p>
+
+    <table>
+      <tr><th>Tipo de medida</th><th>Unidade-base do SI</th><th>Símbolo</th></tr>
+      <tr><td>Comprimento</td><td>metro</td><td>m</td></tr>
+      <tr><td>Área</td><td>metro quadrado</td><td>m²</td></tr>
+      <tr><td>Tempo</td><td>segundo</td><td>s</td></tr>
+    </table>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 Múltiplos e submúltiplos — o que isso significa?</div>
+      <ul>
+        <li><b>Múltiplo</b> = unidade <b>MAIOR</b> que a base. Ex.: 1 km é maior que 1 m (1 km = 1.000 m).</li>
+        <li><b>Submúltiplo</b> = unidade <b>MENOR</b> que a base. Ex.: 1 mm é menor que 1 m (1.000 mm = 1 m).</li>
+      </ul>
+    </div>
+
+    <h3>🔑 Os prefixos do SI — decora estes 6!</h3>
+
+    <p>Os prefixos sempre significam a mesma coisa, não importa se você está falando de metro, grama, litro ou metro quadrado:</p>
+
+    <table>
+      <tr><th>Prefixo</th><th>Significa</th><th>Exemplo</th></tr>
+      <tr><td><b>quilo</b> (k)</td><td>× 1.000</td><td>1 km = 1.000 m</td></tr>
+      <tr><td><b>hecto</b> (h)</td><td>× 100</td><td>1 hm = 100 m</td></tr>
+      <tr><td><b>deca</b> (da)</td><td>× 10</td><td>1 dam = 10 m</td></tr>
+      <tr><td><b>deci</b> (d)</td><td>÷ 10</td><td>1 dm = 0,1 m</td></tr>
+      <tr><td><b>centi</b> (c)</td><td>÷ 100</td><td>1 cm = 0,01 m</td></tr>
+      <tr><td><b>mili</b> (m)</td><td>÷ 1.000</td><td>1 mm = 0,001 m</td></tr>
+    </table>
+
+    <div class="post-it">O <b>"k"</b> de "km" sempre significa "× 1.000". Vai aparecer também em kg (quilograma), kJ (quilojoule)... mesma lógica em tudo!</div>
+
+    <!-- FIXAÇÃO 1 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">Vamos confirmar o embarque com 3 perguntinhas</div>
+      <div class="fixacao-progresso" id="fix-prog-0">Acertos: 0/3</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Qual é a <b>unidade-base do SI</b> para medir comprimento?</div>
+        <div class="alternativas-fix" data-fix="0-0">
+          <button class="alt-fix" onclick="responderFix(0, 0, 0, this)"><span class="letra">a</span><span>quilômetro (km)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 0, 1, this)"><span class="letra">b</span><span>metro (m)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 0, 2, this)"><span class="letra">c</span><span>centímetro (cm)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 0, 3, this)"><span class="letra">d</span><span>milímetro (mm)</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-0-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">O prefixo <b>"quilo"</b> sempre significa multiplicar por:</div>
+        <div class="alternativas-fix" data-fix="0-1">
+          <button class="alt-fix" onclick="responderFix(0, 1, 0, this)"><span class="letra">a</span><span>10</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 1, 1, this)"><span class="letra">b</span><span>100</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 1, 2, this)"><span class="letra">c</span><span>1.000</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 1, 3, this)"><span class="letra">d</span><span>1.000.000</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-0-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Para medir a espessura de um fio de cabelo, qual unidade seria mais adequada?</div>
+        <div class="alternativas-fix" data-fix="0-2">
+          <button class="alt-fix" onclick="responderFix(0, 2, 0, this)"><span class="letra">a</span><span>quilômetro (km)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 2, 1, this)"><span class="letra">b</span><span>metro (m)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 2, 2, this)"><span class="letra">c</span><span>milímetro (mm)</span></button>
+          <button class="alt-fix" onclick="responderFix(0, 2, 3, this)"><span class="letra">d</span><span>hectômetro (hm)</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-0-2"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-0"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" disabled>← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-0" disabled onclick="proximaSecao(0)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2: COMPRIMENTO -->
+  <div class="secao" id="secao-1">
+    <h2>📏 Terminal 2 — Medidas de Comprimento</h2>
+
+    <div class="narr-box">
+      Agora você embarcou no primeiro trilho da Estação. Aqui o sistema é simples: 7 estações em fila, ligadas por trilhos de ×10 e ÷10.
+    </div>
+
+    <h3>🛤️ O trilho do comprimento</h3>
+
+    <div class="trilho-wrapper">
+      <div class="trilho">
+        <div class="estacao">km</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao">hm</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao">dam</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao" style="border-color: #ffd23f;">m</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao">dm</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao">cm</div>
+        <span class="seta-trilho">→×10→</span>
+        <div class="estacao">mm</div>
+      </div>
+      <div class="trilho-legenda">⬅ dividir por 10 ao voltar &nbsp;|&nbsp; ➡ multiplicar por 10 ao avançar</div>
+    </div>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 A regra de ouro do trilho</div>
+      <ul>
+        <li>Cada <b>casa para a DIREITA</b> = multiplica por <b>10</b></li>
+        <li>Cada <b>casa para a ESQUERDA</b> = divide por <b>10</b></li>
+        <li>Se andar 2 casas → ×100 (ou ÷100)</li>
+        <li>Se andar 3 casas → ×1.000 (ou ÷1.000)</li>
+      </ul>
+    </div>
+
+    <h3>📐 Equivalências que valem ouro</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Decore estas:</div>
+      1 km = 1.000 m<br>
+      1 m = 100 cm<br>
+      1 m = 1.000 mm<br>
+      1 cm = 10 mm<br>
+      1 hm = 100 m
+    </div>
+
+    <h3>📦 Outras unidades de comprimento (fora do SI)</h3>
+
+    <p>Em países de língua inglesa (Estados Unidos, Reino Unido), usam-se medidas diferentes. O livro mostra estas:</p>
+
+    <table>
+      <tr><th>Medida</th><th>Equivale a</th></tr>
+      <tr><td>1 pé</td><td>≈ 30,48 cm</td></tr>
+      <tr><td>1 polegada</td><td>≈ 2,54 cm</td></tr>
+      <tr><td>1 jarda</td><td>≈ 91,44 cm</td></tr>
+      <tr><td>1 milha terrestre</td><td>≈ 1.609 m</td></tr>
+      <tr><td>1 milha marítima</td><td>≈ 1.852 m</td></tr>
+    </table>
+
+    <div class="post-it">Quando ver "polegada" pense em <b>tela de TV</b>: TV de 50 polegadas significa que a diagonal da tela tem 50 × 2,54 ≈ 127 cm.</div>
+
+    <!-- FIXAÇÃO 2 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">Identifique a estação certa no trilho</div>
+      <div class="fixacao-progresso" id="fix-prog-1">Acertos: 0/3</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Para ir de <b>km até m</b>, quantas casas você anda no trilho?</div>
+        <div class="alternativas-fix" data-fix="1-0">
+          <button class="alt-fix" onclick="responderFix(1, 0, 0, this)"><span class="letra">a</span><span>1 casa para a direita</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 0, 1, this)"><span class="letra">b</span><span>2 casas para a direita</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 0, 2, this)"><span class="letra">c</span><span>3 casas para a direita</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 0, 3, this)"><span class="letra">d</span><span>3 casas para a esquerda</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-1-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">Qual destas igualdades está <b>CORRETA</b>?</div>
+        <div class="alternativas-fix" data-fix="1-1">
+          <button class="alt-fix" onclick="responderFix(1, 1, 0, this)"><span class="letra">a</span><span>1 m = 10 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 1, 1, this)"><span class="letra">b</span><span>1 m = 100 mm</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 1, 2, this)"><span class="letra">c</span><span>1 km = 100 m</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 1, 3, this)"><span class="letra">d</span><span>1 cm = 10 mm</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-1-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Uma TV de 32 polegadas tem diagonal aproximadamente igual a:</div>
+        <div class="alternativas-fix" data-fix="1-2">
+          <button class="alt-fix" onclick="responderFix(1, 2, 0, this)"><span class="letra">a</span><span>32 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 2, 1, this)"><span class="letra">b</span><span>81 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 2, 2, this)"><span class="letra">c</span><span>320 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(1, 2, 3, this)"><span class="letra">d</span><span>3,2 m</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-1-2"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-1"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(0)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-1" disabled onclick="proximaSecao(1)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3: CONVERSÕES DE COMPRIMENTO -->
+  <div class="secao" id="secao-2">
+    <h2>🔧 Terminal 3 — Conversões de Comprimento na Prática</h2>
+
+    <div class="narr-box">
+      Aqui é a oficina! Você vai pegar números reais e transformá-los entre unidades. Cada conversão é como pegar um vagão e levá-lo de uma estação a outra do trilho.
+    </div>
+
+    <h3>📐 Método 1 — Multiplicação direta</h3>
+
+    <p>Conta quantas casas você anda no trilho e multiplica o resultado:</p>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Transformar 2,78 km em m</div>
+      Do km até o m: <b>3 casas para a direita</b> → multiplica por 10·10·10 = 1.000<br>
+      <br>
+      2,78 × 1.000 = <b>2.780 m</b>
+    </div>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Transformar 50 cm em m</div>
+      Do cm até o m: <b>2 casas para a esquerda</b> → divide por 10·10 = 100<br>
+      <br>
+      50 ÷ 100 = <b>0,5 m</b>
+    </div>
+
+    <h3>✏️ Método 2 — Andar com a vírgula</h3>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 Macete da vírgula</div>
+      <ul>
+        <li><b>Multiplicar</b> por 10, 100 ou 1.000 = andar a vírgula para a <b>DIREITA</b> (mesmo número de zeros)</li>
+        <li><b>Dividir</b> por 10, 100 ou 1.000 = andar a vírgula para a <b>ESQUERDA</b></li>
+      </ul>
+    </div>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Aplicando o macete</div>
+      <b>4,5 m em cm?</b><br>
+      Vai do m até o cm: 2 casas para a direita.<br>
+      Anda a vírgula 2 casas para a direita: 4,5 → 45,0 → 450<br>
+      Resultado: <b>450 cm</b><br>
+      <br>
+      <b>1.250 mm em m?</b><br>
+      Vai do mm até o m: 3 casas para a esquerda.<br>
+      Anda a vírgula 3 casas para a esquerda: 1.250 → 125,0 → 12,50 → 1,250<br>
+      Resultado: <b>1,25 m</b>
+    </div>
+
+    <div class="alerta">
+      <div class="alerta-titulo">⚠️ ARMADILHA CLÁSSICA</div>
+      Muitos alunos erram pensando que "ir do m até o km é multiplicar". <b>É o contrário!</b> Como o km é uma unidade <b>MAIOR</b> que o metro, quando você expressa a mesma distância em km, o número fica <b>MENOR</b>. Então <b>DIVIDE</b>.<br><br>
+      Exemplo: 5.000 m = 5 km (NÃO é 5.000.000 km!)
+    </div>
+
+    <!-- FIXAÇÃO 3 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">Vamos pegar números reais e transformar</div>
+      <div class="fixacao-progresso" id="fix-prog-2">Acertos: 0/4</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Quanto vale <b>3,5 km</b> em metros?</div>
+        <div class="alternativas-fix" data-fix="2-0">
+          <button class="alt-fix" onclick="responderFix(2, 0, 0, this)"><span class="letra">a</span><span>35 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 0, 1, this)"><span class="letra">b</span><span>350 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 0, 2, this)"><span class="letra">c</span><span>3.500 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 0, 3, this)"><span class="letra">d</span><span>35.000 m</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-2-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">Quanto vale <b>425 cm</b> em metros?</div>
+        <div class="alternativas-fix" data-fix="2-1">
+          <button class="alt-fix" onclick="responderFix(2, 1, 0, this)"><span class="letra">a</span><span>4,25 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 1, 1, this)"><span class="letra">b</span><span>42,5 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 1, 2, this)"><span class="letra">c</span><span>0,425 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 1, 3, this)"><span class="letra">d</span><span>42.500 m</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-2-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">O professor pediu que Mateus corresse <b>2 km</b> por dia. Ele anotou que precisava correr <b>200 m</b>. O raciocínio dele está:</div>
+        <div class="alternativas-fix" data-fix="2-2">
+          <button class="alt-fix" onclick="responderFix(2, 2, 0, this)"><span class="letra">a</span><span>Correto — 2 km = 200 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 2, 1, this)"><span class="letra">b</span><span>Errado — o correto é 2.000 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 2, 2, this)"><span class="letra">c</span><span>Errado — o correto é 20 m</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 2, 3, this)"><span class="letra">d</span><span>Errado — o correto é 20.000 m</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-2-2"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 4</div>
+        <div class="exercicio-pergunta">Quanto vale <b>8,5 dam</b> em centímetros?</div>
+        <div class="alternativas-fix" data-fix="2-3">
+          <button class="alt-fix" onclick="responderFix(2, 3, 0, this)"><span class="letra">a</span><span>85 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 3, 1, this)"><span class="letra">b</span><span>850 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 3, 2, this)"><span class="letra">c</span><span>8.500 cm</span></button>
+          <button class="alt-fix" onclick="responderFix(2, 3, 3, this)"><span class="letra">d</span><span>85.000 cm</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-2-3"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-2"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(1)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-2" disabled onclick="proximaSecao(2)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4: ÁREA -->
+  <div class="secao" id="secao-3">
+    <h2>🟦 Terminal 4 — Medidas de Área</h2>
+
+    <div class="narr-box">
+      Você completou o trilho do comprimento! Agora chega no terminal das medidas de superfície. Aqui o sistema parece o mesmo... mas tem uma diferença CRUCIAL que muda tudo.
+    </div>
+
+    <h3>📏 O que é uma medida de área?</h3>
+
+    <p>Área é o tamanho de uma <b>superfície</b> — uma região plana. A unidade-base é o <b>metro quadrado (m²)</b>:</p>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 O metro quadrado</div>
+      <p style="margin: 0;">É a área de um quadrado que tem <b>1 metro de lado</b>. Aparece muito em anúncios de casas, apartamentos e terrenos: "apartamento de 100 m²", "terreno de 500 m²".</p>
+    </div>
+
+    <h3>🛤️ O trilho da área</h3>
+
+    <div class="trilho-wrapper">
+      <div class="trilho">
+        <div class="estacao">km²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao">hm²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao">dam²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao" style="border-color: #ffd23f;">m²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao">dm²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao">cm²</div>
+        <span class="seta-trilho">→×100→</span>
+        <div class="estacao">mm²</div>
+      </div>
+      <div class="trilho-legenda">⬅ dividir por 100 ao voltar &nbsp;|&nbsp; ➡ multiplicar por 100 ao avançar</div>
+    </div>
+
+    <div class="alerta">
+      <div class="alerta-titulo">⚔️ A DIFERENÇA QUE DERRUBA TODO MUNDO</div>
+      Em <b>COMPRIMENTO</b>: cada casa = <b>×10</b><br>
+      Em <b>ÁREA</b>: cada casa = <b>×100</b><br><br>
+      Por quê? Porque o m² é um <b>quadrado</b> de 1 m de lado. Se você multiplica o lado por 10, a área é multiplicada por 10 × 10 = <b>100</b>.
+    </div>
+
+    <h3>🧠 Por que ×100? Entenda a lógica</h3>
+
+    <p>Imagine um quadrado com 1 m de lado. Sua área é 1 m × 1 m = 1 m².</p>
+    <p>Agora, 1 m = 100 cm. Então o mesmo quadrado pode ser visto como tendo 100 cm × 100 cm = <b>10.000 cm²</b>.</p>
+
+    <div class="formula">
+1 m² = 1 × 1 m² = 100 × 100 cm² = 10.000 cm²<br>
+1 km² = 1 × 1 km² = 1.000 × 1.000 m² = 1.000.000 m²<br>
+1 hm² = 1 × 1 hm² = 100 × 100 m² = 10.000 m²
+    </div>
+
+    <h3>📐 Equivalências de área para decorar</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Não esquece destas:</div>
+      1 km² = 1.000.000 m²<br>
+      1 hm² = 10.000 m²<br>
+      1 m² = 10.000 cm²<br>
+      1 cm² = 100 mm²
+    </div>
+
+    <div class="post-it">No trilho da área, andar 2 casas = ×10.000 (não ×100!). Andar 3 casas = ×1.000.000. Por isso os números de área ficam tão grandes!</div>
+
+    <!-- FIXAÇÃO 4 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">A regra do ×100 — a pegadinha número 1 da prova</div>
+      <div class="fixacao-progresso" id="fix-prog-3">Acertos: 0/4</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Quanto vale <b>5 m²</b> em centímetros quadrados (cm²)?</div>
+        <div class="alternativas-fix" data-fix="3-0">
+          <button class="alt-fix" onclick="responderFix(3, 0, 0, this)"><span class="letra">a</span><span>50 cm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 0, 1, this)"><span class="letra">b</span><span>500 cm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 0, 2, this)"><span class="letra">c</span><span>5.000 cm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 0, 3, this)"><span class="letra">d</span><span>50.000 cm²</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-3-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">Quanto vale <b>3 km²</b> em metros quadrados (m²)?</div>
+        <div class="alternativas-fix" data-fix="3-1">
+          <button class="alt-fix" onclick="responderFix(3, 1, 0, this)"><span class="letra">a</span><span>3.000 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 1, 1, this)"><span class="letra">b</span><span>30.000 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 1, 2, this)"><span class="letra">c</span><span>300.000 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 1, 3, this)"><span class="letra">d</span><span>3.000.000 m²</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-3-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Em um trilho de área, ao andar <b>2 casas para a esquerda</b>, eu devo:</div>
+        <div class="alternativas-fix" data-fix="3-2">
+          <button class="alt-fix" onclick="responderFix(3, 2, 0, this)"><span class="letra">a</span><span>multiplicar por 100</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 2, 1, this)"><span class="letra">b</span><span>multiplicar por 10.000</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 2, 2, this)"><span class="letra">c</span><span>dividir por 100</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 2, 3, this)"><span class="letra">d</span><span>dividir por 10.000</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-3-2"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 4</div>
+        <div class="exercicio-pergunta">Um apartamento tem 80 m². Quanto isso vale em <b>dm²</b>?</div>
+        <div class="alternativas-fix" data-fix="3-3">
+          <button class="alt-fix" onclick="responderFix(3, 3, 0, this)"><span class="letra">a</span><span>800 dm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 3, 1, this)"><span class="letra">b</span><span>8.000 dm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 3, 2, this)"><span class="letra">c</span><span>80.000 dm²</span></button>
+          <button class="alt-fix" onclick="responderFix(3, 3, 3, this)"><span class="letra">d</span><span>0,8 dm²</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-3-3"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-3"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(2)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-3" disabled onclick="proximaSecao(3)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 5: HECTARE E ALQUEIRE -->
+  <div class="secao" id="secao-4">
+    <h2>🌾 Terminal 5 — Hectare e Alqueire (medidas agrárias)</h2>
+
+    <div class="narr-box">
+      Você chegou ao terminal rural da Estação! Aqui medimos áreas grandes — fazendas, sítios, chácaras, plantações. Para isso, m² já é pequeno demais, e km² costuma ser grande demais. Surgem então duas unidades especiais.
+    </div>
+
+    <h3>🟩 O hectare (ha)</h3>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 Definição</div>
+      <p style="margin: 0;"><b>1 hectare (ha) = 10.000 m²</b></p>
+      <p style="margin: 6px 0 0;">É a mesma coisa que um <b>hm²</b> (hectômetro quadrado): um quadrado de 100 m por 100 m. Mais ou menos o tamanho de um <b>campo de futebol oficial</b>.</p>
+    </div>
+
+    <p>O hectare é a medida mais usada no <b>Brasil</b> para falar de áreas rurais. Quando você ouve no jornal "uma fazenda de 500 hectares", isso quer dizer 500 × 10.000 = <b>5.000.000 m²</b>, ou seja, <b>5 km²</b>.</p>
+
+    <h3>🌽 O alqueire (medida antiga, mas ainda usada)</h3>
+
+    <p>O alqueire é uma medida antiga que varia conforme a região do Brasil. Cada região definiu seu próprio tamanho:</p>
+
+    <table>
+      <tr><th>Tipo de alqueire</th><th>Equivale a</th></tr>
+      <tr><td>Alqueire paulista</td><td>24.200 m²</td></tr>
+      <tr><td>Alqueire mineiro</td><td>48.400 m²</td></tr>
+      <tr><td>Alqueire da região Norte</td><td>27.225 m²</td></tr>
+    </table>
+
+    <div class="post-it">O alqueire mineiro é exatamente o <b>dobro</b> do paulista (48.400 = 2 × 24.200). Esse padrão pode te ajudar a lembrar.</div>
+
+    <h3>🧮 Exemplo do livro: comparando sítios</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Sítio em Guararema (SP): 7 alqueires paulistas</div>
+      Área: 7 × 24.200 = <b>169.400 m²</b><br>
+      Em hectares: 169.400 ÷ 10.000 = <b>16,94 ha</b>
+    </div>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Sítio em Ibiúna (SP): 3,6 hectares</div>
+      Em m²: 3,6 × 10.000 = <b>36.000 m²</b><br>
+      Em alqueires paulistas: 36.000 ÷ 24.200 ≈ <b>1,49 alqueire</b>
+    </div>
+
+    <div class="alerta">
+      <div class="alerta-titulo">⚠️ ATENÇÃO ÀS UNIDADES NO ENUNCIADO</div>
+      Quando a questão dá o preço de uma propriedade rural, sempre confira se a área está em <b>hectares</b> ou em <b>alqueires</b>. Misturar essas unidades é o erro mais comum em provas com esse tema.
+    </div>
+
+    <!-- FIXAÇÃO 5 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">Medidas agrárias: o terreno onde caem as pegadinhas do ENEM</div>
+      <div class="fixacao-progresso" id="fix-prog-4">Acertos: 0/3</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Uma fazenda tem <b>4,5 hectares</b>. Quantos m² ela possui?</div>
+        <div class="alternativas-fix" data-fix="4-0">
+          <button class="alt-fix" onclick="responderFix(4, 0, 0, this)"><span class="letra">a</span><span>450 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 0, 1, this)"><span class="letra">b</span><span>4.500 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 0, 2, this)"><span class="letra">c</span><span>45.000 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 0, 3, this)"><span class="letra">d</span><span>450.000 m²</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-4-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">Um sítio mineiro tem <b>2 alqueires mineiros</b>. Sua área em m² é:</div>
+        <div class="alternativas-fix" data-fix="4-1">
+          <button class="alt-fix" onclick="responderFix(4, 1, 0, this)"><span class="letra">a</span><span>48.400 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 1, 1, this)"><span class="letra">b</span><span>96.800 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 1, 2, this)"><span class="letra">c</span><span>24.200 m²</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 1, 3, this)"><span class="letra">d</span><span>484.000 m²</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-4-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Uma propriedade de <b>3 km²</b> vai reservar metade da área para preservação. Quantos hectares serão preservados?</div>
+        <div class="alternativas-fix" data-fix="4-2">
+          <button class="alt-fix" onclick="responderFix(4, 2, 0, this)"><span class="letra">a</span><span>15 ha</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 2, 1, this)"><span class="letra">b</span><span>150 ha</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 2, 2, this)"><span class="letra">c</span><span>1.500 ha</span></button>
+          <button class="alt-fix" onclick="responderFix(4, 2, 3, this)"><span class="letra">d</span><span>15.000 ha</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-4-2"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-4"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(3)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-4" disabled onclick="proximaSecao(4)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 6: TEMPO -->
+  <div class="secao" id="secao-5">
+    <h2>⏰ Terminal 6 — Medidas de Tempo</h2>
+
+    <div class="narr-box">
+      O último trilho da Estação tem uma surpresa: aqui NÃO funciona o esquema de ×10 ou ×100. Tempo é diferente — e a história disso vem de povos antigos.
+    </div>
+
+    <h3>🏛️ Por que o tempo é diferente?</h3>
+
+    <p>Os <b>babilônios</b>, há mais de 3.500 anos, dividiam o dia em <b>12 partes</b> (depois em 24) usando uma contagem "duodecimal" (de 12 em 12). E dividiram a hora em <b>60 minutos</b> e o minuto em <b>60 segundos</b>. Esse sistema permaneceu até hoje em todo o mundo!</p>
+
+    <p>Por isso, tempo usa <b>base 60</b> (não base 10 como o resto do SI).</p>
+
+    <h3>📏 A unidade-base é o SEGUNDO</h3>
+
+    <table>
+      <tr><th>Unidade</th><th>Equivale a</th></tr>
+      <tr><td>1 minuto (min)</td><td>60 segundos (s)</td></tr>
+      <tr><td>1 hora (h)</td><td>60 min = 3.600 s</td></tr>
+      <tr><td>1 dia (d)</td><td>24 h = 1.440 min = 86.400 s</td></tr>
+    </table>
+
+    <h3>🔄 Como converter</h3>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 Esquema das conversões</div>
+      <ul>
+        <li><b>De maior para menor</b> (hora → min → seg): MULTIPLICA por 60</li>
+        <li><b>De menor para maior</b> (seg → min → hora): DIVIDE por 60</li>
+        <li>Para ir direto de <b>hora para segundo</b>: ×60×60 = <b>×3.600</b></li>
+        <li>Para ir direto de <b>segundo para hora</b>: ÷3.600</li>
+      </ul>
+    </div>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Exemplos resolvidos</div>
+      <b>3 horas em segundos:</b> 3 × 3.600 = <b>10.800 s</b><br>
+      <br>
+      <b>240 segundos em minutos:</b> 240 ÷ 60 = <b>4 min</b><br>
+      <br>
+      <b>1,5 horas em horas e minutos:</b><br>
+      0,5 h em min: 0,5 × 60 = 30 min<br>
+      Logo: 1,5 h = <b>1 h 30 min</b><br>
+      <br>
+      <b>2,4 horas em horas e minutos:</b><br>
+      0,4 h em min: 0,4 × 60 = 24 min<br>
+      Logo: 2,4 h = <b>2 h 24 min</b>
+    </div>
+
+    <h3>🧮 Caso difícil: converter segundos em h, min e seg</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">10.000 segundos em h, min e seg</div>
+      <b>Passo 1:</b> divide por 3.600 (segundos por hora):<br>
+      10.000 ÷ 3.600 = 2 horas, sobra 2.800 segundos<br>
+      <br>
+      <b>Passo 2:</b> os 2.800 s restantes, divide por 60:<br>
+      2.800 ÷ 60 = 46 minutos, sobra 40 segundos<br>
+      <br>
+      <b>Resultado:</b> 10.000 s = <b>2 h 46 min 40 s</b>
+    </div>
+
+    <div class="post-it">Quando o resultado tiver casa decimal, multiplique a parte decimal por 60 para achar os minutos. Ex.: 1,75 h → 0,75 × 60 = 45 min → 1 h 45 min.</div>
+
+    <!-- FIXAÇÃO 6 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">A base 60 vai te confundir? Não, vamos treinar</div>
+      <div class="fixacao-progresso" id="fix-prog-5">Acertos: 0/3</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">Quanto vale <b>180 segundos</b> em minutos?</div>
+        <div class="alternativas-fix" data-fix="5-0">
+          <button class="alt-fix" onclick="responderFix(5, 0, 0, this)"><span class="letra">a</span><span>1,8 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 0, 1, this)"><span class="letra">b</span><span>3 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 0, 2, this)"><span class="letra">c</span><span>18 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 0, 3, this)"><span class="letra">d</span><span>30 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-5-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">Quanto vale <b>2,5 horas</b> em horas e minutos?</div>
+        <div class="alternativas-fix" data-fix="5-1">
+          <button class="alt-fix" onclick="responderFix(5, 1, 0, this)"><span class="letra">a</span><span>2 h 5 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 1, 1, this)"><span class="letra">b</span><span>2 h 30 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 1, 2, this)"><span class="letra">c</span><span>2 h 50 min</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 1, 3, this)"><span class="letra">d</span><span>5 h 0 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-5-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Tomás vai assistir a uma aula online de <b>7.200 segundos</b>. Quanto tempo isso vai durar?</div>
+        <div class="alternativas-fix" data-fix="5-2">
+          <button class="alt-fix" onclick="responderFix(5, 2, 0, this)"><span class="letra">a</span><span>1 hora</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 2, 1, this)"><span class="letra">b</span><span>2 horas</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 2, 2, this)"><span class="letra">c</span><span>72 horas</span></button>
+          <button class="alt-fix" onclick="responderFix(5, 2, 3, this)"><span class="letra">d</span><span>120 horas</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-5-2"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-5"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(4)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-5" disabled onclick="proximaSecao(5)">Próximo terminal 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 7: OPERAÇÕES COM TEMPO -->
+  <div class="secao" id="secao-6">
+    <h2>➕ Terminal 7 — Operações com Tempo (a parada final!)</h2>
+
+    <div class="narr-box">
+      Você quase concluiu a jornada! Esta última estação ensina a SOMAR e SUBTRAIR tempos — e atenção: o regrupamento aqui é o que mais aparece em provas.
+    </div>
+
+    <h3>🔧 Como somar tempos</h3>
+
+    <div class="conceito-card">
+      <div class="titulo">🎯 Regra geral</div>
+      <p style="margin: 0;"><b>Soma cada parte separadamente:</b> hora com hora, minuto com minuto, segundo com segundo. Depois, se passar de 60, você REGRUPA.</p>
+    </div>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Soma simples — sem regrupamento</div>
+      2 h 15 min + 3 h 30 min<br>
+      Horas: 2 + 3 = 5 h<br>
+      Minutos: 15 + 30 = 45 min<br>
+      Resultado: <b>5 h 45 min</b>
+    </div>
+
+    <h3>⚔️ A pegadinha do regrupamento (a maior cilada da prova!)</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Soma com regrupamento — atenção!</div>
+      4 h 35 min 45 s + 2 h 24 min 15 s<br>
+      Horas: 4 + 2 = 6 h<br>
+      Minutos: 35 + 24 = 59 min<br>
+      Segundos: 45 + 15 = <b>60 s</b><br>
+      <br>
+      Resultado parcial: 6 h 59 min 60 s<br>
+      <br>
+      Mas 60 s = 1 min! Então <b>REGRUPAMOS</b>:<br>
+      60 s vira 1 min e zera os segundos:<br>
+      6 h 59 min 60 s = 6 h (59+1) min 0 s = 6 h 60 min 0 s<br>
+      <br>
+      E 60 min = 1 hora! Regrupa de novo:<br>
+      6 h 60 min 0 s = (6+1) h 0 min 0 s = <b>7 h</b>
+    </div>
+
+    <div class="alerta">
+      <div class="alerta-titulo">⚔️ REGRA DE OURO DO REGRUPAMENTO</div>
+      Em tempo, NUNCA pode passar de 60 nos minutos ou segundos.<br>
+      • Se segundos ≥ 60 → tira 60, soma 1 nos minutos<br>
+      • Se minutos ≥ 60 → tira 60, soma 1 nas horas<br><br>
+      <b>"6 h 59 min 60 s" NÃO é resposta final!</b> Sempre regrupa até zerar.
+    </div>
+
+    <h3>➖ Subtração de tempos</h3>
+
+    <p>Para subtrair, quando faltam unidades para subtrair, você "empresta" da unidade maior (parecido com subtração de números com vírgula):</p>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Subtração com empréstimo</div>
+      3 h 10 min − 1 h 25 min<br>
+      <br>
+      Para fazer 10 − 25 não dá... então pego 1 hora emprestada das 3 horas (= 60 min):<br>
+      3 h 10 min = 2 h 70 min<br>
+      <br>
+      Agora subtrai:<br>
+      2 h 70 min − 1 h 25 min = (2−1) h (70−25) min = <b>1 h 45 min</b>
+    </div>
+
+    <h3>🧠 Problema do livro: Pietra vai chegar atrasada?</h3>
+
+    <div class="exemplo">
+      <div class="exemplo-titulo">Pietra precisa estar na escola às 13 h</div>
+      Hora atual: 11 h 55 min<br>
+      Banho: 10 min &nbsp;|&nbsp; Almoço: 25 min &nbsp;|&nbsp; Trajeto: 15 min<br>
+      Total a gastar: 10 + 25 + 15 = 50 min<br>
+      <br>
+      Tempo disponível: das 11h55 até as 13h = <b>1 h 5 min = 65 min</b><br>
+      Tempo necessário: 50 min<br>
+      Sobra: 65 − 50 = <b>15 min</b><br>
+      <br>
+      Conclusão: ela <b>NÃO chegará atrasada</b> — ainda terá 15 min de folga.
+    </div>
+
+    <!-- FIXAÇÃO 7 -->
+    <div class="fixacao-box">
+      <div class="fixacao-titulo">🎯 Hora de Fixar!</div>
+      <div class="fixacao-subtitulo">Operações com tempo — o regrupamento é a chave</div>
+      <div class="fixacao-progresso" id="fix-prog-6">Acertos: 0/4</div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 1</div>
+        <div class="exercicio-pergunta">A soma <b>3 h 45 min + 2 h 30 min</b> resulta em:</div>
+        <div class="alternativas-fix" data-fix="6-0">
+          <button class="alt-fix" onclick="responderFix(6, 0, 0, this)"><span class="letra">a</span><span>5 h 75 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 0, 1, this)"><span class="letra">b</span><span>6 h 15 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 0, 2, this)"><span class="letra">c</span><span>5 h 15 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 0, 3, this)"><span class="letra">d</span><span>6 h 75 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-6-0"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 2</div>
+        <div class="exercicio-pergunta">A forma mais simplificada de <b>5 h 59 min 60 s</b> é:</div>
+        <div class="alternativas-fix" data-fix="6-1">
+          <button class="alt-fix" onclick="responderFix(6, 1, 0, this)"><span class="letra">a</span><span>5 h 59 min 60 s (já está)</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 1, 1, this)"><span class="letra">b</span><span>5 h 60 min 0 s</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 1, 2, this)"><span class="letra">c</span><span>6 h 0 min 0 s</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 1, 3, this)"><span class="letra">d</span><span>5 h 119 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-6-1"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 3</div>
+        <div class="exercicio-pergunta">Bruno começou a estudar às <b>14 h 20 min</b> e parou às <b>16 h 5 min</b>. Quanto tempo ele estudou?</div>
+        <div class="alternativas-fix" data-fix="6-2">
+          <button class="alt-fix" onclick="responderFix(6, 2, 0, this)"><span class="letra">a</span><span>1 h 45 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 2, 1, this)"><span class="letra">b</span><span>2 h 15 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 2, 2, this)"><span class="letra">c</span><span>2 h 25 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 2, 3, this)"><span class="letra">d</span><span>1 h 25 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-6-2"></div>
+      </div>
+
+      <div class="exercicio">
+        <div class="exercicio-num">Exercício 4</div>
+        <div class="exercicio-pergunta">Beatriz treina <b>1 h 20 min</b> por dia. Em 5 dias, treina ao todo:</div>
+        <div class="alternativas-fix" data-fix="6-3">
+          <button class="alt-fix" onclick="responderFix(6, 3, 0, this)"><span class="letra">a</span><span>5 h 100 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 3, 1, this)"><span class="letra">b</span><span>5 h 20 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 3, 2, this)"><span class="letra">c</span><span>6 h 40 min</span></button>
+          <button class="alt-fix" onclick="responderFix(6, 3, 3, this)"><span class="letra">d</span><span>7 h 0 min</span></button>
+        </div>
+        <div class="feedback-fix" id="fb-6-3"></div>
+      </div>
+
+      <div class="resultado-fix" id="res-6"></div>
+
+      <div class="nav-secao">
+        <button class="btn-nav" onclick="navegar(5)">← Anterior</button>
+        <button class="btn-nav btn-proxima" id="btn-prox-6" disabled onclick="proximaSecao(6)">Concluir jornada! 🏆</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CELEBRAÇÃO FINAL -->
+  <div class="celebracao" id="celebracao" style="display: none;">
+    <h2 id="celeb-titulo">🚉 Jornada Completa!</h2>
+    <div class="titulo-mago" id="celeb-mago">⭐ Mestre da Estação</div>
+    <p id="celeb-pontos" style="font-size: 1.1em; color: #fff; margin: 12px 0;"></p>
+    <p id="celeb-msg" style="color: #fff; font-size: 1em; max-width: 600px; margin: 12px auto;"></p>
+
+    <div class="narr-box" style="text-align: center; margin: 20px 0;">
+      🚉 Boa prova, jovem aprendiz! Que cada conversão saia certeira e que nenhuma cilada de regrupamento te pegue de surpresa. ⚙️✨
+    </div>
+
+    <button class="btn-nav btn-tentar" onclick="reiniciarTudo()">🔄 Refazer toda a jornada</button>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">💾 Salvo!</div>
+
+<script>
+const TOTAL_SECOES = 7;
+const exercicios = {
+  // Seção 1: Embarque
+  '0-0': { correta: 1, exp: 'A unidade-base do SI para comprimento é o <b>metro (m)</b>. Os outros são múltiplos (km) ou submúltiplos (cm, mm) do metro.' },
+  '0-1': { correta: 2, exp: 'O prefixo "quilo" sempre significa <b>× 1.000</b>. Por isso 1 km = 1.000 m, 1 kg = 1.000 g, 1 kJ = 1.000 J.' },
+  '0-2': { correta: 2, exp: 'A espessura de um fio de cabelo é muito pequena — usamos <b>milímetro (mm)</b>. km, m e hm seriam grandes demais.' },
+  // Seção 2: Comprimento
+  '1-0': { correta: 2, exp: 'No trilho km → hm → dam → m, são <b>3 casas para a direita</b>. Cada casa = ×10, então o total é ×1.000.' },
+  '1-1': { correta: 3, exp: '<b>1 cm = 10 mm</b> é verdade. As outras: 1 m = 100 cm (não 10), 1 m = 1.000 mm (não 100), 1 km = 1.000 m (não 100).' },
+  '1-2': { correta: 1, exp: '32 polegadas × 2,54 cm = <b>81,28 cm</b>. Por isso TVs e celulares de 32" têm cerca de 81 cm de diagonal.' },
+  // Seção 3: Conversões de comprimento
+  '2-0': { correta: 2, exp: 'Do km até o m são 3 casas para a direita → ×1.000. Então 3,5 × 1.000 = <b>3.500 m</b>.' },
+  '2-1': { correta: 0, exp: 'Do cm até o m são 2 casas para a esquerda → ÷100. Então 425 ÷ 100 = <b>4,25 m</b>.' },
+  '2-2': { correta: 1, exp: 'Errado! 2 km = 2 × 1.000 = <b>2.000 m</b>, não 200 m. Ele esqueceu um zero na conversão.' },
+  '2-3': { correta: 2, exp: 'Do dam até o cm são 3 casas para a direita → ×1.000. Então 8,5 × 1.000 = <b>8.500 cm</b>.' },
+  // Seção 4: Área
+  '3-0': { correta: 3, exp: 'Do m² até o cm² são 2 casas para a direita → ×10.000 (cada casa em área é ×100). Então 5 × 10.000 = <b>50.000 cm²</b>.' },
+  '3-1': { correta: 3, exp: '1 km² = 1.000.000 m². Então 3 × 1.000.000 = <b>3.000.000 m²</b>.' },
+  '3-2': { correta: 3, exp: 'Em área, cada casa = ×100 ou ÷100. <b>2 casas para a esquerda = ÷100 × ÷100 = ÷10.000</b>.' },
+  '3-3': { correta: 1, exp: 'Do m² até o dm² é 1 casa para a direita → ×100. Então 80 × 100 = <b>8.000 dm²</b>.' },
+  // Seção 5: Hectare e Alqueire
+  '4-0': { correta: 3, exp: '1 hectare = 10.000 m². Então 4,5 × 10.000 = <b>45.000 m²</b>.' },
+  '4-1': { correta: 1, exp: '1 alqueire mineiro = 48.400 m². Então 2 × 48.400 = <b>96.800 m²</b>.' },
+  '4-2': { correta: 1, exp: '3 km² = 3.000.000 m². Metade = 1.500.000 m². Em hectares: 1.500.000 ÷ 10.000 = <b>150 ha</b>.' },
+  // Seção 6: Tempo
+  '5-0': { correta: 1, exp: '180 ÷ 60 = <b>3 min</b>. Como 1 min = 60 s, dividimos por 60 para ir de segundo para minuto.' },
+  '5-1': { correta: 1, exp: '2,5 h = 2 h + 0,5 h. E 0,5 × 60 = 30 min. Então 2,5 h = <b>2 h 30 min</b>.' },
+  '5-2': { correta: 1, exp: '7.200 ÷ 3.600 = <b>2 horas</b>. Como 1 h = 3.600 s, dividimos por 3.600 para ir de seg para hora.' },
+  // Seção 7: Operações com Tempo
+  '6-0': { correta: 1, exp: 'Horas: 3+2 = 5h. Min: 45+30 = 75 min. Como 75 ≥ 60, regrupa: 75 = 1h 15min. Total: <b>6 h 15 min</b>.' },
+  '6-1': { correta: 2, exp: 'Os 60 s viram 1 min → 5h 60min 0s. Os 60 min viram 1 h → <b>6 h 0 min 0 s = 6 h</b>. Sempre regrupa até zerar!' },
+  '6-2': { correta: 0, exp: '16h 5min − 14h 20min. Para subtrair 20 de 5, pega 1 h emprestada: 16h 5min = 15h 65min. Então: 15h 65min − 14h 20min = <b>1 h 45 min</b>.' },
+  '6-3': { correta: 2, exp: 'Horas: 5 × 1 = 5 h. Min: 5 × 20 = 100 min. 100 min = 1h 40min. Total: 5h + 1h 40min = <b>6 h 40 min</b>.' },
+};
+
+const totaisPorSecao = [3, 3, 4, 4, 3, 3, 4];
+const acertosPorSecao = [0, 0, 0, 0, 0, 0, 0];
+const respondidasPorSecao = [0, 0, 0, 0, 0, 0, 0];
+const respostasDadas = {};
+
+// Atualiza total geral
+document.getElementById('total-geral').textContent = totaisPorSecao.reduce((a, b) => a + b, 0);
+
+function responderFix(secao, ex, alt, btn) {
+  const chave = `${secao}-${ex}`;
+  if (respostasDadas[chave] !== undefined) return;
+
+  const ex_data = exercicios[chave];
+  const correto = (alt === ex_data.correta);
+  respostasDadas[chave] = alt;
+  respondidasPorSecao[secao]++;
+  if (correto) acertosPorSecao[secao]++;
+
+  const altsContainer = document.querySelector(`[data-fix="${chave}"]`);
+  altsContainer.querySelectorAll('.alt-fix').forEach((b, j) => {
+    b.disabled = true;
+    if (j === ex_data.correta) b.classList.add('correta');
+    else if (j === alt) b.classList.add('errada');
+    else b.classList.add('desativada');
+  });
+
+  const fb = document.getElementById(`fb-${chave}`);
+  if (correto) {
+    fb.className = 'feedback-fix acerto';
+    fb.innerHTML = `<div class="titulo-fb">✅ Correto!</div>${ex_data.exp}`;
+  } else {
+    fb.className = 'feedback-fix erro';
+    fb.innerHTML = `<div class="titulo-fb">❌ Não foi dessa vez.</div>${ex_data.exp}`;
+  }
+
+  atualizarProgresso(secao);
+}
+
+function atualizarProgresso(secao) {
+  const total = totaisPorSecao[secao];
+  const acertos = acertosPorSecao[secao];
+  const respondidas = respondidasPorSecao[secao];
+
+  document.getElementById(`fix-prog-${secao}`).textContent = `Acertos: ${acertos}/${total}`;
+
+  const acertosTotaisCount = acertosPorSecao.reduce((a, b) => a + b, 0);
+  const totalGeral = totaisPorSecao.reduce((a, b) => a + b, 0);
+  document.getElementById('acertos-totais').textContent = acertosTotaisCount;
+  const pct = (acertosTotaisCount / totalGeral) * 100;
+  document.getElementById('progresso-fill').style.width = pct + '%';
+
+  if (respondidas === total) {
+    avaliarSecao(secao);
+  }
+}
+
+function avaliarSecao(secao) {
+  const total = totaisPorSecao[secao];
+  const acertos = acertosPorSecao[secao];
+  const minimo = Math.ceil(total * 0.7);
+  const liberou = acertos >= minimo;
+
+  const resBox = document.getElementById(`res-${secao}`);
+  resBox.classList.add('visivel');
+
+  if (liberou) {
+    resBox.innerHTML = `
+      <div class="pontuacao-fix">${acertos} / ${total} acertos ✅</div>
+      <div class="mensagem-fix">🎉 <b>Excelente, jovem aprendiz!</b> Você dominou este terminal. Próxima parada liberada!</div>
+    `;
+    document.getElementById(`btn-prox-${secao}`).disabled = false;
+    document.getElementById(`btn-prox-${secao}`).innerHTML = secao === 6
+      ? 'Concluir Jornada! 🏆'
+      : 'Próximo terminal ✓';
+  } else {
+    resBox.innerHTML = `
+      <div class="pontuacao-fix">${acertos} / ${total} acertos ⚠️</div>
+      <div class="mensagem-fix bloqueado">Você precisa de pelo menos <b>${minimo} acertos</b> para avançar. Releia o conteúdo deste terminal e clique abaixo para tentar novamente.</div>
+      <button class="btn-nav btn-tentar" onclick="reiniciarSecao(${secao})" style="margin-top: 10px; max-width: 300px;">🔄 Refazer exercícios deste terminal</button>
+    `;
+  }
+}
+
+function reiniciarSecao(secao) {
+  for (let i = 0; i < totaisPorSecao[secao]; i++) {
+    const chave = `${secao}-${i}`;
+    delete respostasDadas[chave];
+    const altsContainer = document.querySelector(`[data-fix="${chave}"]`);
+    altsContainer.querySelectorAll('.alt-fix').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('correta', 'errada', 'desativada');
+    });
+    document.getElementById(`fb-${chave}`).className = 'feedback-fix';
+    document.getElementById(`fb-${chave}`).innerHTML = '';
+  }
+  acertosPorSecao[secao] = 0;
+  respondidasPorSecao[secao] = 0;
+  document.getElementById(`fix-prog-${secao}`).textContent = `Acertos: 0/${totaisPorSecao[secao]}`;
+  document.getElementById(`res-${secao}`).classList.remove('visivel');
+  document.getElementById(`res-${secao}`).innerHTML = '';
+
+  const acertosTotaisCount = acertosPorSecao.reduce((a, b) => a + b, 0);
+  const totalGeral = totaisPorSecao.reduce((a, b) => a + b, 0);
+  document.getElementById('acertos-totais').textContent = acertosTotaisCount;
+  document.getElementById('progresso-fill').style.width = (acertosTotaisCount / totalGeral) * 100 + '%';
+}
+
+function navegar(secao) {
+  const item = document.querySelector(`.mapa-item[data-secao="${secao}"]`);
+  if (!item.classList.contains('disponivel')) return;
+
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+  document.querySelectorAll('.mapa-item').forEach(m => m.classList.remove('atual'));
+  document.getElementById(`secao-${secao}`).classList.add('ativa');
+  item.classList.add('atual');
+  document.getElementById('secao-atual').textContent = secao + 1;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function proximaSecao(secaoAtual) {
+  const proxima = secaoAtual + 1;
+  const itemAtual = document.querySelector(`.mapa-item[data-secao="${secaoAtual}"]`);
+  itemAtual.classList.add('concluida');
+
+  if (proxima >= TOTAL_SECOES) {
+    finalizarJornada();
+    return;
+  }
+
+  const itemProxima = document.querySelector(`.mapa-item[data-secao="${proxima}"]`);
+  itemProxima.classList.add('disponivel');
+  navegar(proxima);
+}
+
+function finalizarJornada() {
+  document.querySelector(`.mapa-item[data-secao="6"]`).classList.add('concluida');
+
+  const acertosTotaisCount = acertosPorSecao.reduce((a, b) => a + b, 0);
+  const totalGeral = totaisPorSecao.reduce((a, b) => a + b, 0);
+  const pct = (acertosTotaisCount / totalGeral) * 100;
+
+  let titulo, mago, msg;
+  if (pct === 100) {
+    titulo = '🏆 PERFEIÇÃO TOTAL! 🏆';
+    mago = '👑 Chefe Suprema da Estação';
+    msg = 'Acertou TUDO! Você dominou completamente o conteúdo. Está mais que pronta para a prova! 🚉✨';
+  } else if (pct >= 90) {
+    titulo = '🌟 EXCELENTE JORNADA! 🌟';
+    mago = '✨ Mestra Engenheira de Conversões';
+    msg = `Acertou ${acertosTotaisCount} de ${totalGeral} (${Math.round(pct)}%)! Excelente desempenho. Pode encarar a prova com confiança!`;
+  } else if (pct >= 75) {
+    titulo = '⚙️ Boa Jornada!';
+    mago = '⭐ Operadora de Trilhos';
+    msg = `Acertou ${acertosTotaisCount} de ${totalGeral} (${Math.round(pct)}%). Bom domínio! Reveja os pontos onde errou para chegar na prova ainda mais segura.`;
+  } else {
+    titulo = '📚 Jornada Completa, mas...';
+    mago = '🌱 Aprendiz da Estação';
+    msg = `Acertou ${acertosTotaisCount} de ${totalGeral} (${Math.round(pct)}%). Vale a pena refazer os terminais onde teve mais dificuldade antes da prova!`;
+  }
+
+  document.getElementById('celeb-titulo').textContent = titulo;
+  document.getElementById('celeb-mago').textContent = mago;
+  document.getElementById('celeb-pontos').innerHTML = `Acertos totais: <b style="color: #ffd23f;">${acertosTotaisCount} / ${totalGeral}</b>`;
+  document.getElementById('celeb-msg').textContent = msg;
+
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+  document.getElementById('celebracao').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function reiniciarTudo() {
+  if (!confirm('Refazer toda a jornada do zero? Todo progresso será apagado.')) return;
+  localStorage.removeItem(CHAVE_STORAGE);
+  window.location.reload();
+}
+
+// SISTEMA DE PERSISTÊNCIA
+const CHAVE_STORAGE = 'kit_estudos_mat_cap5_v1';
+
+function salvarProgresso() {
+  try {
+    const secoesDesbloqueadas = [];
+    const secoesConcluidas = [];
+    document.querySelectorAll('.mapa-item').forEach((item, i) => {
+      if (item.classList.contains('disponivel')) secoesDesbloqueadas.push(i);
+      if (item.classList.contains('concluida')) secoesConcluidas.push(i);
+    });
+
+    let secaoAtual = 0;
+    document.querySelectorAll('.secao').forEach((s, i) => {
+      if (s.classList.contains('ativa')) secaoAtual = i;
+    });
+
+    const celebracaoVisivel = document.getElementById('celebracao').style.display === 'block';
+
+    const estado = {
+      respostasDadas,
+      acertosPorSecao,
+      respondidasPorSecao,
+      secoesDesbloqueadas,
+      secoesConcluidas,
+      secaoAtual,
+      celebracaoVisivel,
+      dataSalvamento: new Date().toISOString()
+    };
+
+    localStorage.setItem(CHAVE_STORAGE, JSON.stringify(estado));
+    atualizarRotuloUltimoSalvar(estado.dataSalvamento);
+  } catch (e) {
+    console.error('Erro ao salvar:', e);
+  }
+}
+
+function carregarProgresso() {
+  try {
+    const dado = localStorage.getItem(CHAVE_STORAGE);
+    if (!dado) return false;
+    const estado = JSON.parse(dado);
+
+    Object.keys(estado.respostasDadas).forEach(chave => {
+      respostasDadas[chave] = estado.respostasDadas[chave];
+    });
+    for (let i = 0; i < TOTAL_SECOES; i++) {
+      acertosPorSecao[i] = estado.acertosPorSecao[i] || 0;
+      respondidasPorSecao[i] = estado.respondidasPorSecao[i] || 0;
+    }
+
+    Object.keys(estado.respostasDadas).forEach(chave => {
+      const ex_data = exercicios[chave];
+      if (!ex_data) return;
+      const altSelecionada = estado.respostasDadas[chave];
+      const altsContainer = document.querySelector(`[data-fix="${chave}"]`);
+      if (!altsContainer) return;
+
+      altsContainer.querySelectorAll('.alt-fix').forEach((b, j) => {
+        b.disabled = true;
+        if (j === ex_data.correta) b.classList.add('correta');
+        else if (j === altSelecionada) b.classList.add('errada');
+        else b.classList.add('desativada');
+      });
+
+      const correto = (altSelecionada === ex_data.correta);
+      const fb = document.getElementById(`fb-${chave}`);
+      if (correto) {
+        fb.className = 'feedback-fix acerto';
+        fb.innerHTML = `<div class="titulo-fb">✅ Correto!</div>${ex_data.exp}`;
+      } else {
+        fb.className = 'feedback-fix erro';
+        fb.innerHTML = `<div class="titulo-fb">❌ Não foi dessa vez.</div>${ex_data.exp}`;
+      }
+    });
+
+    if (estado.secoesDesbloqueadas) {
+      estado.secoesDesbloqueadas.forEach(i => {
+        const item = document.querySelector(`.mapa-item[data-secao="${i}"]`);
+        if (item) item.classList.add('disponivel');
+      });
+    }
+    if (estado.secoesConcluidas) {
+      estado.secoesConcluidas.forEach(i => {
+        const item = document.querySelector(`.mapa-item[data-secao="${i}"]`);
+        if (item) item.classList.add('concluida');
+      });
+    }
+
+    for (let secao = 0; secao < TOTAL_SECOES; secao++) {
+      if (respondidasPorSecao[secao] === totaisPorSecao[secao]) {
+        avaliarSecao(secao);
+      }
+    }
+
+    if (typeof estado.secaoAtual === 'number') {
+      navegar(estado.secaoAtual);
+    }
+
+    const acertosTotaisCount = acertosPorSecao.reduce((a, b) => a + b, 0);
+    const totalGeral = totaisPorSecao.reduce((a, b) => a + b, 0);
+    document.getElementById('acertos-totais').textContent = acertosTotaisCount;
+    document.getElementById('progresso-fill').style.width = (acertosTotaisCount / totalGeral) * 100 + '%';
+
+    if (estado.celebracaoVisivel) {
+      finalizarJornada();
+    }
+
+    atualizarRotuloUltimoSalvar(estado.dataSalvamento);
+    return true;
+  } catch (e) {
+    console.error('Erro ao carregar progresso:', e);
+    return false;
+  }
+}
+
+function atualizarRotuloUltimoSalvar(iso) {
+  if (!iso) {
+    document.getElementById('ultimo-salvar').textContent = '—';
+    return;
+  }
+  const d = new Date(iso);
+  const data = d.toLocaleDateString('pt-BR');
+  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('ultimo-salvar').textContent = `${data} às ${hora}`;
+}
+
+function mostrarToast(mensagem) {
+  const toast = document.getElementById('toast');
+  toast.textContent = mensagem;
+  toast.classList.add('visivel');
+  setTimeout(() => toast.classList.remove('visivel'), 2200);
+}
+
+function exportarProgresso() {
+  const dado = localStorage.getItem(CHAVE_STORAGE);
+  if (!dado) {
+    alert('Ainda não há progresso para exportar. Faça pelo menos um exercício primeiro.');
+    return;
+  }
+  const blob = new Blob([dado], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const data = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+  a.href = url;
+  a.download = `progresso_leitura_mat_cap5_${data}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarToast('📥 Progresso exportado!');
+}
+
+function importarProgresso(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const conteudo = e.target.result;
+      JSON.parse(conteudo);
+      if (confirm('Isso vai substituir o progresso atual pelo do arquivo. Continuar?')) {
+        localStorage.setItem(CHAVE_STORAGE, conteudo);
+        mostrarToast('📤 Progresso importado!');
+        setTimeout(() => window.location.reload(), 800);
+      }
+    } catch (err) {
+      alert('Arquivo inválido. Por favor, use um arquivo de progresso exportado anteriormente.');
+    }
+  };
+  reader.readAsText(arquivo);
+  event.target.value = '';
+}
+
+function zerarProgresso() {
+  if (!confirm('Tem certeza? Todo o progresso salvo será apagado e a página vai recarregar do zero.')) return;
+  localStorage.removeItem(CHAVE_STORAGE);
+  mostrarToast('🗑️ Progresso apagado!');
+  setTimeout(() => window.location.reload(), 800);
+}
+
+const _responderFixOriginal = responderFix;
+responderFix = function(secao, ex, alt, btn) {
+  _responderFixOriginal(secao, ex, alt, btn);
+  salvarProgresso();
+};
+
+const _proximaSecaoOriginal = proximaSecao;
+proximaSecao = function(secaoAtual) {
+  _proximaSecaoOriginal(secaoAtual);
+  salvarProgresso();
+};
+
+const _reiniciarSecaoOriginal = reiniciarSecao;
+reiniciarSecao = function(secao) {
+  _reiniciarSecaoOriginal(secao);
+  salvarProgresso();
+};
+
+const _finalizarJornadaOriginal = finalizarJornada;
+finalizarJornada = function() {
+  _finalizarJornadaOriginal();
+  salvarProgresso();
+};
+
+const _navegarOriginal = navegar;
+navegar = function(secao) {
+  _navegarOriginal(secao);
+  if (localStorage.getItem(CHAVE_STORAGE)) {
+    salvarProgresso();
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(carregarProgresso, 100);
+});
+</script>
+
+</body>
+</html>

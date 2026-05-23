@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 Simulado Interativo — Transformação de Unidades</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --borda: #d8e0ea;
+  --texto: #1a2a3e;
+  --texto2: #4a5a72;
+  --verde: #1a7a3a;
+  --verde-bg: #e8f5ec;
+  --vermelho: #b91c1c;
+  --vermelho-bg: #fef2f2;
+  --laranja: #ff6b1a;
+  --laranja-bg: #fff4ed;
+  --azul: #1e3a5f;
+  --azul-bg: #eaf0f8;
+  --cinza: #6b7280;
+  --cinza-bg: #f3f4f6;
+  --sombra: 0 2px 12px rgba(26,42,62,0.08);
+  --raio: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Source Sans 3', sans-serif; color: var(--texto); min-height: 100vh; }
+
+.header {
+  background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
+  color: #f4f7fb;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--vermelho), #dc2626, var(--vermelho));
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.header p { font-size: 13px; opacity: 0.8; }
+.header .badge-prova {
+  display: inline-block;
+  background: rgba(185,28,28,0.3);
+  border: 1px solid rgba(185,28,28,0.5);
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 3px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+/* BARRA DE RESULTADO FIXA */
+.resultado-barra {
+  display: none;
+  background: linear-gradient(135deg, #0a1929, #1e3a5f);
+  color: #f4f7fb;
+  padding: 12px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.resultado-barra.visivel { display: block; }
+.resultado-barra-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.rb-nota { font-family: 'Playfair Display',serif; font-size: 20px; font-weight: 900; }
+.rb-codigo {
+  background: rgba(185,28,28,0.2);
+  border: 1px solid rgba(185,28,28,0.5);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fca5a5;
+}
+.rb-status {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.rb-status.bloqueado { background: rgba(185,28,28,0.2); color: #fca5a5; }
+.rb-status.liberado { background: rgba(26,122,58,0.2); color: #86efac; }
+
+/* PROGRESS BAR */
+.progress-container {
+  background: var(--card);
+  border-bottom: 1px solid var(--borda);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra);
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto2);
+}
+.progress-bar {
+  height: 8px;
+  background: var(--cinza-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vermelho), #dc2626);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.content { max-width: 720px; margin: 0 auto; padding: 20px 16px 100px; }
+
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--sombra);
+  transition: border-color 0.3s;
+  position: relative;
+}
+.q-card.respondida { border-color: var(--verde); }
+.q-card.faltando { border-color: var(--vermelho); animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.q-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cinza-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto2);
+  margin-bottom: 10px;
+  transition: background 0.3s, color 0.3s;
+}
+.q-card.respondida .q-num { background: var(--verde); color: white; }
+
+.q-texto {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--texto);
+  margin-bottom: 14px;
+}
+.q-texto strong, .q-texto b { color: var(--laranja); font-family: 'Courier New', monospace; }
+
+.opcoes { display: flex; flex-direction: column; gap: 8px; }
+.opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--texto2);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.opcao:hover { border-color: var(--laranja); background: var(--laranja-bg); }
+.opcao.selecionada {
+  border-color: var(--azul);
+  background: var(--azul-bg);
+  color: var(--texto);
+  font-weight: 600;
+}
+.opcao-letra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--cinza-bg);
+  color: var(--texto2);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.opcao.selecionada .opcao-letra { background: var(--azul); color: white; }
+
+.q-card.bloqueada .opcao { cursor: default; pointer-events: none; }
+.q-card.bloqueada .opcao.selecionada.correta { border-color: var(--verde); background: var(--verde-bg); }
+.q-card.bloqueada .opcao.selecionada.correta .opcao-letra { background: var(--verde); color: white; }
+.q-card.bloqueada .opcao.selecionada.errada { border-color: var(--vermelho); background: var(--vermelho-bg); }
+.q-card.bloqueada .opcao.selecionada.errada .opcao-letra { background: var(--vermelho); color: white; }
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) { border-color: var(--verde); background: var(--verde-bg); }
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) .opcao-letra { background: var(--verde); color: white; }
+
+.feedback { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.55; }
+.feedback.acertou { background: var(--verde-bg); border-left: 4px solid var(--verde); }
+.feedback.errou { background: var(--vermelho-bg); border-left: 4px solid var(--vermelho); }
+.feedback-titulo { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.feedback.acertou .feedback-titulo { color: var(--verde); }
+.feedback.errou .feedback-titulo { color: var(--vermelho); }
+.feedback-erradas { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); color: var(--cinza); font-size: 12px; }
+.feedback-erradas p { margin-bottom: 3px; }
+
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--borda);
+  padding: 14px 20px;
+  display: flex; justify-content: center; gap: 12px; align-items: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+.btn-enviar {
+  padding: 12px 32px; border: none; border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-enviar.desabilitado { background: var(--cinza-bg); color: var(--cinza); cursor: not-allowed; }
+.btn-enviar.ativo { background: var(--vermelho); color: white; box-shadow: 0 4px 12px rgba(185,28,28,0.3); }
+.btn-enviar.ativo:hover { background: #991b1b; transform: translateY(-1px); }
+.aviso-faltam { font-size: 12px; color: var(--vermelho); font-weight: 600; display: none; }
+
+.resultado-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,25,41,0.92);
+  z-index: 200; justify-content: center; align-items: center; padding: 20px;
+}
+.resultado-overlay.visivel { display: flex; }
+.resultado-card {
+  background: var(--card); border-radius: 16px; padding: 32px 28px;
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.3s ease;
+}
+@keyframes pop { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+.resultado-emoji { font-size: 56px; margin-bottom: 12px; }
+.resultado-titulo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+.resultado-nota { font-size: 48px; font-weight: 900; color: var(--vermelho); margin: 12px 0; }
+.resultado-msg { font-size: 14px; color: var(--texto2); margin-bottom: 16px; line-height: 1.5; }
+.codigo-box {
+  background: #fef2f2; border: 2px dashed var(--vermelho);
+  border-radius: 8px; padding: 14px; margin: 16px 0;
+}
+.codigo-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--vermelho); margin-bottom: 6px; }
+.codigo-valor { font-family: monospace; font-size: 28px; font-weight: 900; color: var(--texto); letter-spacing: 3px; }
+.codigo-instrucao { font-size: 11px; color: var(--texto2); margin-top: 6px; }
+.btn-fechar-resultado {
+  margin-top: 10px; padding: 8px 20px; background: transparent;
+  border: 1px solid var(--borda); border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer;
+}
+
+.trava-msg { display: none; text-align: center; padding: 20px; font-size: 14px; color: var(--texto2); background: var(--cinza-bg); border-radius: var(--raio); margin-bottom: 14px; }
+.trava-msg.visivel { display: block; }
+
+/* PAINEL DE SALVAMENTO */
+.painel-salvar {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.painel-salvar .info-salvar {
+  color: var(--texto2);
+  flex: 1;
+  min-width: 200px;
+}
+.painel-salvar .info-salvar b { color: var(--texto); }
+.botoes-salvar { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-salvar {
+  background: white;
+  border: 1px solid var(--borda);
+  color: var(--texto2);
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.2s;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.btn-salvar:hover { border-color: var(--laranja); color: var(--laranja); }
+.btn-salvar.zerar:hover { border-color: var(--vermelho); color: var(--vermelho); }
+
+.toast {
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  background: linear-gradient(135deg, #1a7a3a, #166534);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 22px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+  z-index: 250;
+  font-weight: 700;
+  font-size: 13px;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.35s;
+}
+.toast.visivel { transform: translateY(0); opacity: 1; }
+
+@media (max-width: 480px) {
+  .q-card { padding: 16px; }
+  .opcao { padding: 10px 12px; font-size: 13px; }
+  .resultado-nota { font-size: 40px; }
+  .codigo-valor { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge-prova">SIMULADO COMPLETO • 22 QUESTÕES</div>
+  <h1>📋 Simulado — Transformação de Unidades</h1>
+  <p>Cap. 5 • Matemática 7º ano • pp. 84–105</p>
+</div>
+
+<div class="resultado-barra" id="resultadoBarra">
+  <div class="resultado-barra-inner">
+    <span class="rb-nota" id="rbNota">📋 0/22</span>
+    <span>🔑</span>
+    <span class="rb-codigo" id="rbCodigo">---</span>
+    <span class="rb-status bloqueado" id="rbStatus">🔒 Gabarito bloqueado</span>
+  </div>
+</div>
+
+<div class="progress-container" id="progressContainer">
+  <div class="progress-info">
+    <span id="progTexto">0 de 22 respondidas</span>
+    <span id="progPct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progFill"></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="painel-salvar">
+    <div class="info-salvar">
+      💾 Progresso salvo automaticamente neste navegador<br>
+      <span style="font-size: 11px; opacity: 0.8;">Último salvamento: <b id="ultimo-salvar">—</b></span>
+    </div>
+    <div class="botoes-salvar">
+      <button class="btn-salvar" onclick="exportarProgresso()">📥 Exportar</button>
+      <button class="btn-salvar" onclick="document.getElementById('input-importar').click()">📤 Importar</button>
+      <button class="btn-salvar zerar" onclick="zerarProgresso()">🗑️ Zerar</button>
+      <input type="file" id="input-importar" accept=".json" style="display:none" onchange="importarProgresso(event)">
+    </div>
+  </div>
+
+  <div id="simArea"></div>
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+  <span class="aviso-faltam" id="avisoFaltam"></span>
+  <button class="btn-enviar desabilitado" id="btnEnviar" onclick="tentarEnviar()">Enviar Simulado</button>
+</div>
+
+<div class="resultado-overlay" id="resultadoOverlay">
+  <div class="resultado-card">
+    <div class="resultado-emoji" id="resEmoji">🎯</div>
+    <div class="resultado-titulo" id="resTitulo">Resultado</div>
+    <div class="resultado-nota" id="resNota">0/22</div>
+    <div class="resultado-msg" id="resMsg"></div>
+    <div class="codigo-box">
+      <div class="codigo-label">🔑 Código de Liberação</div>
+      <div class="codigo-valor" id="resCodigo">---</div>
+      <div class="codigo-instrucao">Mostre este código para um adulto, para liberar o gabarito comentado</div>
+    </div>
+    <br>
+    <button class="btn-fechar-resultado" onclick="fecharResultado()">Fechar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">💾 Salvo!</div>
+
+<script>
+const SIM = [
+  {q:"O Sistema Internacional de Unidades (SI) define a unidade-base de comprimento como:",
+   opts:["o quilômetro (km)","o metro (m)","o centímetro (cm)","o milímetro (mm)"],
+   correta:1,
+   explicacao:"A unidade-base do SI para comprimento é o <b>metro (m)</b>. Todas as outras unidades de comprimento (km, cm, mm, etc.) são múltiplos ou submúltiplos do metro.",
+   erradas:{0:"O km é um MÚLTIPLO do metro, não a unidade-base.",2:"O cm é um SUBMÚLTIPLO do metro, não a unidade-base.",3:"O mm é um SUBMÚLTIPLO do metro, não a unidade-base."}},
+
+  {q:"O prefixo <b>'mili'</b> (m), usado em mm, ml, mg, sempre significa:",
+   opts:["multiplicar por 1.000","multiplicar por 100","dividir por 100","dividir por 1.000"],
+   correta:3,
+   explicacao:"O prefixo 'mili' sempre significa <b>÷1.000</b>. Por isso 1 mm = 0,001 m, 1 ml = 0,001 L, 1 mg = 0,001 g.",
+   erradas:{0:"×1.000 é o prefixo 'quilo' (k), não 'mili'.",1:"×100 é o prefixo 'hecto' (h), não 'mili'.",2:"÷100 é o prefixo 'centi' (c), não 'mili'."}},
+
+  {q:"Quanto vale <b>4,75 km</b> em metros?",
+   opts:["47,5 m","475 m","4.750 m","47.500 m"],
+   correta:2,
+   explicacao:"Do km até o m são 3 casas para a direita → multiplica por 1.000. Então 4,75 × 1.000 = <b>4.750 m</b>.",
+   erradas:{0:"Você só multiplicou por 10 (1 casa). Lembre: km até m são 3 casas.",1:"Você multiplicou por 100 (2 casas). Lembre: km até m são 3 casas.",3:"Você multiplicou por 10.000 (4 casas). km até m são 3 casas, não 4."}},
+
+  {q:"Quanto vale <b>650 cm</b> em metros?",
+   opts:["0,065 m","0,65 m","6,5 m","65 m"],
+   correta:2,
+   explicacao:"Do cm até o m são 2 casas para a esquerda → divide por 100. Então 650 ÷ 100 = <b>6,5 m</b>.",
+   erradas:{0:"Você dividiu por 10.000 (4 casas). cm até m são só 2 casas.",1:"Você dividiu por 1.000 (3 casas). cm até m são 2 casas.",3:"Você dividiu por 10 (1 casa). cm até m são 2 casas."}},
+
+  {q:"A altura da Pedra do Baú (Campos do Jordão–SP) é aproximadamente <b>1.950 m</b>. Em quilômetros, isso equivale a:",
+   opts:["0,195 km","1,95 km","19,5 km","19.500 km"],
+   correta:1,
+   explicacao:"Do m até o km são 3 casas para a esquerda → divide por 1.000. Então 1.950 ÷ 1.000 = <b>1,95 km</b>.",
+   erradas:{0:"Você dividiu por 10.000 (4 casas). m até km são 3 casas.",2:"Você dividiu por 100 (2 casas). m até km são 3 casas.",3:"Você multiplicou em vez de dividir. Como km é unidade MAIOR, o número fica MENOR."}},
+
+  {q:"Uma TV de <b>55 polegadas</b> tem aproximadamente quantos centímetros de diagonal? (Considere 1 polegada ≈ 2,54 cm.)",
+   opts:["≈ 22 cm","≈ 55 cm","≈ 140 cm","≈ 1.397 cm"],
+   correta:2,
+   explicacao:"55 × 2,54 = <b>139,7 cm ≈ 140 cm</b>. Por isso TVs de 55\" têm cerca de 1,40 m de diagonal.",
+   erradas:{0:"Você dividiu 55 por 2,54 — o correto é multiplicar.",1:"Polegada não é igual a centímetro — 1 pol ≈ 2,54 cm.",3:"Você multiplicou 55 por 25,4 (uma vírgula a mais). O fator é 2,54, não 25,4."}},
+
+  {q:"O Sistema Internacional define a unidade-base de área como:",
+   opts:["o quilômetro quadrado (km²)","o metro quadrado (m²)","o hectare (ha)","o alqueire"],
+   correta:1,
+   explicacao:"A unidade-base do SI para área é o <b>m²</b>: um quadrado de 1 metro de lado.",
+   erradas:{0:"km² é um MÚLTIPLO do m², não a unidade-base.",2:"O hectare é uma unidade muito usada, mas NÃO é a unidade-base do SI (= 1 hm² = 10.000 m²).",3:"O alqueire é uma medida antiga, NÃO faz parte do SI."}},
+
+  {q:"No trilho da área, ao avançar <b>1 casa para a direita</b>, eu devo multiplicar por:",
+   opts:["10","100","1.000","10.000"],
+   correta:1,
+   explicacao:"Em medidas de ÁREA, cada casa do trilho vale <b>×100</b> (porque a área é o quadrado do lado, e o lado vai ×10). Diferente de comprimento, onde cada casa vale ×10.",
+   erradas:{0:"×10 vale para COMPRIMENTO. Em área, cada casa = ×100.",2:"×1.000 corresponde a 3 casas de comprimento, ou 1,5 casas de área (não existe).",3:"×10.000 corresponde a 2 casas em área, não 1."}},
+
+  {q:"Quanto vale <b>8 m²</b> em centímetros quadrados (cm²)?",
+   opts:["800 cm²","8.000 cm²","80.000 cm²","800.000 cm²"],
+   correta:2,
+   explicacao:"Do m² até o cm² são 2 casas para a direita em área. Cada casa = ×100, então 2 casas = ×10.000. Logo: 8 × 10.000 = <b>80.000 cm²</b>.",
+   erradas:{0:"Você multiplicou por 100 (1 casa). m² até cm² são 2 casas.",1:"Você multiplicou por 1.000. Lembre: em área cada casa é ×100.",3:"Você multiplicou por 100.000 (a mais que precisava)."}},
+
+  {q:"Quanto vale <b>2,5 km²</b> em metros quadrados?",
+   opts:["2.500 m²","25.000 m²","250.000 m²","2.500.000 m²"],
+   correta:3,
+   explicacao:"1 km² = 1.000.000 m² (do km² ao m² são 3 casas, cada uma ×100, total ×1.000.000). Então 2,5 × 1.000.000 = <b>2.500.000 m²</b>.",
+   erradas:{0:"Você multiplicou por 1.000. Como é área, cada casa é ×100.",1:"Você multiplicou por 10.000 (2 casas em área). Mas são 3 casas até m².",2:"Você multiplicou por 100.000. Falta um zero."}},
+
+  {q:"Um terreno tem <b>3.500 dm²</b>. Quanto isso é em m²?",
+   opts:["0,35 m²","3,5 m²","35 m²","350 m²"],
+   correta:2,
+   explicacao:"Do dm² até o m² é 1 casa para a esquerda em área → ÷100. Logo 3.500 ÷ 100 = <b>35 m²</b>.",
+   erradas:{0:"Você dividiu por 10.000 (2 casas). dm² até m² é só 1 casa.",1:"Você dividiu por 1.000. Em área cada casa é ÷100.",3:"Você dividiu por 10 (a metade do que deveria)."}},
+
+  {q:"Sobre as medidas agrárias, é CORRETO afirmar que:",
+   opts:["1 hectare equivale a 1.000 m²","1 hectare equivale a 10.000 m² e é igual a 1 hm²","1 alqueire tem o mesmo tamanho em todas as regiões do Brasil","1 km² é menor que 1 hectare"],
+   correta:1,
+   explicacao:"<b>1 hectare = 10.000 m² = 1 hm²</b>, equivalente a um quadrado de 100 m por 100 m (≈ um campo de futebol oficial).",
+   erradas:{0:"1 ha = 10.000 m², não 1.000 m². Cuidado com o número de zeros!",2:"O alqueire VARIA por região (paulista, mineiro, do Norte têm tamanhos diferentes).",3:"É o oposto: 1 km² = 1.000.000 m² = 100 hectares. O km² é MUITO maior que o hectare."}},
+
+  {q:"Um sítio em Guararema (SP) tem <b>5 alqueires paulistas</b>. Considerando 1 alqueire paulista = 24.200 m², a área desse sítio em hectares é:",
+   opts:["≈ 1,21 ha","≈ 12,1 ha","≈ 121 ha","≈ 1.210 ha"],
+   correta:1,
+   explicacao:"Área em m²: 5 × 24.200 = 121.000 m². Em ha: 121.000 ÷ 10.000 = <b>12,1 ha</b>.",
+   erradas:{0:"Você dividiu por 100.000 (a mais). Lembre: 1 ha = 10.000 m².",2:"Faltou dividir por 10.000 (você esqueceu de converter m² para ha).",3:"Você não dividiu suficiente."}},
+
+  {q:"Uma fazenda tem <b>3 km²</b>. Quantos hectares essa fazenda possui?",
+   opts:["30 ha","300 ha","3.000 ha","30.000 ha"],
+   correta:1,
+   explicacao:"1 km² = 100 hm² = 100 ha. Então 3 × 100 = <b>300 ha</b>. Outra forma: 3 km² = 3.000.000 m² → 3.000.000 ÷ 10.000 = 300 ha.",
+   erradas:{0:"Você converteu apenas para o múltiplo errado. 1 km² = 100 ha, não 10 ha.",2:"Você multiplicou por 1.000. O fator correto é 100 (não esqueça que 1 ha = 1 hm²).",3:"Multiplicou por 10.000 — bem maior do que o correto."}},
+
+  {q:"A unidade-base do SI para tempo é:",
+   opts:["o minuto","a hora","o segundo","o dia"],
+   correta:2,
+   explicacao:"A unidade-base do SI para tempo é o <b>segundo (s)</b>. Outras unidades como min, h e d são múltiplos do segundo.",
+   erradas:{0:"O minuto é múltiplo do segundo (1 min = 60 s).",1:"A hora é múltiplo (1 h = 3.600 s).",3:"O dia é múltiplo (1 d = 86.400 s)."}},
+
+  {q:"Quanto vale <b>4 horas</b> em segundos?",
+   opts:["240 s","2.400 s","14.400 s","240.000 s"],
+   correta:2,
+   explicacao:"De hora para segundo, multiplica por 3.600 (porque 1 h = 60 min × 60 s = 3.600 s). Logo 4 × 3.600 = <b>14.400 s</b>.",
+   erradas:{0:"Você multiplicou só por 60 (= passou só de hora para minuto).",1:"Você multiplicou por 600 (faltou um 6).",3:"Você multiplicou por 60.000 (uma vírgula a mais)."}},
+
+  {q:"Quanto vale <b>3,5 horas</b> em horas e minutos?",
+   opts:["3 h 5 min","3 h 30 min","3 h 50 min","3 h 35 min"],
+   correta:1,
+   explicacao:"3,5 h = 3 h + 0,5 h. E 0,5 × 60 = 30 min. Logo 3,5 h = <b>3 h 30 min</b>.",
+   erradas:{0:"Você considerou 0,5 como 5 min — mas 0,5 h = 30 min (metade de 60).",2:"Você multiplicou 0,5 por 100 em vez de 60.",3:"Você considerou 0,5 como 35 min — sem cálculo claro."}},
+
+  {q:"Vinícius vai ver uma série que dura <b>4.500 segundos</b>. Esse tempo equivale a:",
+   opts:["45 minutos","1 h 15 min","1 h 30 min","2 h 15 min"],
+   correta:1,
+   explicacao:"4.500 ÷ 60 = 75 minutos. E 75 min = 1 h 15 min (60 min + 15 min). Logo <b>1 h 15 min</b>.",
+   erradas:{0:"45 min = 2.700 s, não 4.500 s.",2:"1 h 30 min = 90 min = 5.400 s, não 4.500 s.",3:"2 h 15 min = 135 min = 8.100 s, não 4.500 s."}},
+
+  {q:"A soma <b>2 h 40 min + 1 h 35 min</b> resulta em:",
+   opts:["3 h 15 min","3 h 75 min","4 h 15 min","4 h 75 min"],
+   correta:2,
+   explicacao:"Horas: 2 + 1 = 3 h. Min: 40 + 35 = 75 min. Como 75 ≥ 60, REGRUPA: 75 min = 1 h 15 min. Total: 3 h + 1 h 15 min = <b>4 h 15 min</b>.",
+   erradas:{0:"Você somou só as horas, esqueceu de somar e regrupar os minutos.",1:"Você esqueceu de regrupar! 75 min não pode ficar — vira 1 h 15 min.",3:"Errou nas duas operações."}},
+
+  {q:"A subtração <b>4 h 15 min − 1 h 40 min</b> resulta em:",
+   opts:["2 h 25 min","2 h 35 min","3 h 25 min","3 h 35 min"],
+   correta:1,
+   explicacao:"Para tirar 40 de 15 não dá → pega 1 h emprestada: 4 h 15 min = 3 h 75 min. Agora 3 h 75 min − 1 h 40 min = <b>2 h 35 min</b>.",
+   erradas:{0:"Você se confundiu no empréstimo: 75 − 40 = 35, não 25.",2:"Você esqueceu do empréstimo de 1 hora.",3:"Errou nos minutos E não fez o empréstimo certo."}},
+
+  {q:"Uma corredora amadora treina <b>2 km diários</b>. Em <b>3 semanas</b> (21 dias), quanto ela correrá ao todo, em metros?",
+   opts:["42 m","420 m","4.200 m","42.000 m"],
+   correta:3,
+   explicacao:"Total em km: 2 × 21 = 42 km. Em metros: 42 × 1.000 = <b>42.000 m</b>.",
+   erradas:{0:"Você esqueceu de converter km para m.",1:"Você multiplicou por 10. Lembre: 1 km = 1.000 m.",2:"Você multiplicou por 100. 1 km = 1.000 m, e o total é 42 km."}},
+
+  {q:"Bianca foi à academia. Ela ficou <b>45 min</b> na esteira, <b>30 min</b> na musculação e <b>1 h 10 min</b> no spinning. Quanto tempo, no total, ela ficou na academia?",
+   opts:["1 h 25 min","2 h 25 min","2 h 5 min","2 h 35 min"],
+   correta:1,
+   explicacao:"45 + 30 + 70 = 145 min. Convertendo: 145 ÷ 60 = 2, sobra 25. Então <b>2 h 25 min</b>. (Lembre que 1 h 10 min = 70 min.)",
+   erradas:{0:"Você esqueceu de somar uma das atividades.",2:"Você somou 45+30+10 = 85 min = 1h 25min, e adicionou 1h fazendo 2h 5min. O erro foi não somar os 10 min corretamente.",3:"Você somou errado nos minutos. Refaz: 45 + 30 = 75 (= 1h 15min), depois +1h 10min = 2h 25min."}},
+];
+
+const TOTAL = SIM.length;
+let respostas = new Array(TOTAL).fill(-1);
+let enviado = false;
+let codigoLiberado = false;
+let codigoGerado = null;
+const CHAVE_STORAGE = 'kit_estudos_mat_cap5_simulado_v1';
+
+function init() {
+  const area = document.getElementById('simArea');
+  const letras = ['A','B','C','D'];
+  SIM.forEach((q, i) => {
+    let html = `<div class="q-card" id="qcard${i}">
+      <div class="q-num">${i+1}</div>
+      <div class="q-texto">${i+1}. ${q.q}</div>
+      <div class="opcoes">`;
+    q.opts.forEach((opt, j) => {
+      html += `<div class="opcao" id="opt${i}_${j}" onclick="selecionar(${i},${j})">
+        <span class="opcao-letra">${letras[j]}</span>
+        <span>${opt}</span>
+      </div>`;
+    });
+    html += `</div><div class="feedback" id="fb${i}"></div></div>`;
+    area.innerHTML += html;
+  });
+  carregarProgresso();
+}
+
+function selecionar(qi, oi) {
+  if (enviado) return;
+  for (let j = 0; j < SIM[qi].opts.length; j++) {
+    document.getElementById(`opt${qi}_${j}`).classList.remove('selecionada');
+  }
+  document.getElementById(`opt${qi}_${oi}`).classList.add('selecionada');
+  respostas[qi] = oi;
+  document.getElementById(`qcard${qi}`).classList.add('respondida');
+  document.getElementById(`qcard${qi}`).classList.remove('faltando');
+  atualizarProgresso();
+  salvarProgresso();
+}
+
+function atualizarProgresso() {
+  const resp = respostas.filter(r => r >= 0).length;
+  const pct = Math.round((resp / TOTAL) * 100);
+  document.getElementById('progTexto').textContent = `${resp} de ${TOTAL} respondidas`;
+  document.getElementById('progPct').textContent = `${pct}%`;
+  document.getElementById('progFill').style.width = `${pct}%`;
+  const btn = document.getElementById('btnEnviar');
+  if (resp === TOTAL) { btn.classList.remove('desabilitado'); btn.classList.add('ativo'); }
+  else { btn.classList.add('desabilitado'); btn.classList.remove('ativo'); }
+}
+
+function tentarEnviar() {
+  if (enviado) return;
+  const faltando = [];
+  respostas.forEach((r, i) => { if (r < 0) faltando.push(i + 1); });
+  if (faltando.length > 0) {
+    const aviso = document.getElementById('avisoFaltam');
+    aviso.textContent = `Faltam: questões ${faltando.slice(0,8).join(', ')}${faltando.length > 8 ? '...' : ''}`;
+    aviso.style.display = 'block';
+    faltando.forEach(n => {
+      const card = document.getElementById(`qcard${n-1}`);
+      card.classList.add('faltando');
+      setTimeout(() => card.classList.remove('faltando'), 1000);
+    });
+    document.getElementById(`qcard${faltando[0]-1}`).scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  enviado = true;
+  let acertos = 0;
+  respostas.forEach((r, i) => { if (r === SIM[i].correta) acertos++; });
+
+  const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const r1 = letras[Math.floor(Math.random()*letras.length)];
+  const r2 = letras[Math.floor(Math.random()*letras.length)];
+  codigoGerado = `SIM-${acertos}-${r1}${r2}`;
+
+  const pct = Math.round((acertos/TOTAL)*100);
+  let emoji, titulo, msg;
+  if (pct >= 80) { emoji='🏆'; titulo='Excelente!'; msg='Você arrasou no simulado!'; }
+  else if (pct >= 64) { emoji='👏'; titulo='Bom trabalho!'; msg='Meta alcançada! Revise os erros para ficar perfeito.'; }
+  else if (pct >= 40) { emoji='📚'; titulo='Quase lá!'; msg='Releia o resumo e tente de novo — você está perto!'; }
+  else { emoji='💪'; titulo='Não desista!'; msg='Estude pelo resumo interativo e volte — você consegue!'; }
+
+  document.getElementById('resEmoji').textContent = emoji;
+  document.getElementById('resTitulo').textContent = titulo;
+  document.getElementById('resNota').textContent = `${acertos}/${TOTAL}`;
+  document.getElementById('resMsg').textContent = msg;
+  document.getElementById('resCodigo').textContent = codigoGerado;
+  document.getElementById('resultadoOverlay').classList.add('visivel');
+
+  document.getElementById('rbNota').textContent = `📋 ${acertos}/${TOTAL}`;
+  document.getElementById('rbCodigo').textContent = codigoGerado;
+  document.getElementById('resultadoBarra').classList.add('visivel');
+  document.getElementById('progressContainer').style.display = 'none';
+  document.getElementById('bottomBar').style.display = 'none';
+  salvarProgresso();
+}
+
+function fecharResultado() {
+  document.getElementById('resultadoOverlay').classList.remove('visivel');
+  if (!codigoLiberado) {
+    const area = document.getElementById('simArea');
+    if (!document.getElementById('travaMsg')) {
+      const html = `<div class="trava-msg visivel" id="travaMsg">
+        🔒 <strong>Gabarito bloqueado.</strong><br>
+        Mostre o código de liberação para um adulto.<br>
+        Quando ele autorizar, digite o código abaixo:<br><br>
+        <input type="text" id="inputCodigo" placeholder="Digite o código aqui"
+          style="padding:10px 14px; border:2px solid var(--borda); border-radius:8px; font-size:16px;
+          text-align:center; width:240px; font-family:monospace; text-transform:uppercase;">
+        <br><br>
+        <button onclick="verificarCodigo()" style="padding:10px 24px; background:var(--azul); color:white;
+          border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Source Sans 3',sans-serif;">
+          Liberar Gabarito
+        </button>
+        <div id="codigoErro" style="color:var(--vermelho); font-size:12px; margin-top:8px; display:none;">
+          Código incorreto. Peça ao adulto o código correto.
+        </div>
+      </div>`;
+      area.insertAdjacentHTML('afterbegin', html);
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+function verificarCodigo() {
+  const input = document.getElementById('inputCodigo').value.trim().toUpperCase();
+  if (input === codigoGerado) {
+    codigoLiberado = true;
+    document.getElementById('travaMsg').style.display = 'none';
+    liberarGabarito();
+    salvarProgresso();
+  } else {
+    document.getElementById('codigoErro').style.display = 'block';
+  }
+}
+
+function liberarGabarito() {
+  const rbStatus = document.getElementById('rbStatus');
+  rbStatus.textContent = '✅ Gabarito liberado';
+  rbStatus.classList.remove('bloqueado');
+  rbStatus.classList.add('liberado');
+
+  const letras = ['A','B','C','D'];
+  SIM.forEach((q, i) => {
+    const card = document.getElementById(`qcard${i}`);
+    card.classList.add('bloqueada');
+    const escolheu = respostas[i];
+    const acertou = escolheu === q.correta;
+    q.opts.forEach((_, j) => {
+      const opt = document.getElementById(`opt${i}_${j}`);
+      if (j === q.correta) opt.classList.add('resposta-certa');
+      if (j === escolheu && acertou) opt.classList.add('correta');
+      if (j === escolheu && !acertou) opt.classList.add('errada');
+    });
+    const fb = document.getElementById(`fb${i}`);
+    fb.style.display = 'block';
+    if (acertou) {
+      fb.className = 'feedback acertou';
+      fb.innerHTML = `<div class="feedback-titulo">✅ Você acertou!</div><div>${q.explicacao}</div>`;
+    } else {
+      let erradasHTML = '';
+      for (const [idx, motivo] of Object.entries(q.erradas)) {
+        erradasHTML += `<p style="color:#888"><strong>${letras[idx]})</strong> ${motivo}</p>`;
+      }
+      fb.className = 'feedback errou';
+      fb.innerHTML = `<div class="feedback-titulo">❌ Resposta incorreta</div>
+        <div><strong style="color:var(--verde)">Correta: ${letras[q.correta]})</strong> ${q.explicacao}</div>
+        <div class="feedback-erradas"><strong>Por que as outras estão erradas:</strong>${erradasHTML}</div>`;
+    }
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// SISTEMA DE PERSISTÊNCIA
+function salvarProgresso() {
+  try {
+    const estado = {
+      respostas,
+      enviado,
+      codigoLiberado,
+      codigoGerado,
+      dataSalvamento: new Date().toISOString()
+    };
+    localStorage.setItem(CHAVE_STORAGE, JSON.stringify(estado));
+    atualizarRotuloUltimoSalvar(estado.dataSalvamento);
+  } catch (e) {
+    console.error('Erro ao salvar:', e);
+  }
+}
+
+function carregarProgresso() {
+  try {
+    const dado = localStorage.getItem(CHAVE_STORAGE);
+    if (!dado) return false;
+    const estado = JSON.parse(dado);
+
+    if (estado.respostas) {
+      respostas = estado.respostas;
+      respostas.forEach((r, i) => {
+        if (r >= 0) {
+          document.getElementById(`opt${i}_${r}`).classList.add('selecionada');
+          document.getElementById(`qcard${i}`).classList.add('respondida');
+        }
+      });
+    }
+
+    if (estado.enviado) {
+      enviado = true;
+      codigoGerado = estado.codigoGerado;
+      let acertos = 0;
+      respostas.forEach((r, i) => { if (r === SIM[i].correta) acertos++; });
+
+      document.getElementById('rbNota').textContent = `📋 ${acertos}/${TOTAL}`;
+      document.getElementById('rbCodigo').textContent = codigoGerado;
+      document.getElementById('resultadoBarra').classList.add('visivel');
+      document.getElementById('progressContainer').style.display = 'none';
+      document.getElementById('bottomBar').style.display = 'none';
+
+      if (estado.codigoLiberado) {
+        codigoLiberado = true;
+        liberarGabarito();
+      } else {
+        // Mostra a tela de trava
+        const area = document.getElementById('simArea');
+        if (!document.getElementById('travaMsg')) {
+          const html = `<div class="trava-msg visivel" id="travaMsg">
+            🔒 <strong>Gabarito bloqueado.</strong><br>
+            Seu código de liberação: <strong style="font-family:monospace; font-size:18px; color:var(--vermelho);">${codigoGerado}</strong><br>
+            Mostre esse código para um adulto. Quando autorizar, digite-o abaixo:<br><br>
+            <input type="text" id="inputCodigo" placeholder="Digite o código aqui"
+              style="padding:10px 14px; border:2px solid var(--borda); border-radius:8px; font-size:16px;
+              text-align:center; width:240px; font-family:monospace; text-transform:uppercase;">
+            <br><br>
+            <button onclick="verificarCodigo()" style="padding:10px 24px; background:var(--azul); color:white;
+              border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Source Sans 3',sans-serif;">
+              Liberar Gabarito
+            </button>
+            <div id="codigoErro" style="color:var(--vermelho); font-size:12px; margin-top:8px; display:none;">
+              Código incorreto. Peça ao adulto o código correto.
+            </div>
+          </div>`;
+          area.insertAdjacentHTML('afterbegin', html);
+        }
+      }
+    } else {
+      atualizarProgresso();
+    }
+
+    atualizarRotuloUltimoSalvar(estado.dataSalvamento);
+    return true;
+  } catch (e) {
+    console.error('Erro ao carregar:', e);
+    return false;
+  }
+}
+
+function atualizarRotuloUltimoSalvar(iso) {
+  if (!iso) {
+    document.getElementById('ultimo-salvar').textContent = '—';
+    return;
+  }
+  const d = new Date(iso);
+  const data = d.toLocaleDateString('pt-BR');
+  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('ultimo-salvar').textContent = `${data} às ${hora}`;
+}
+
+function mostrarToast(mensagem) {
+  const toast = document.getElementById('toast');
+  toast.textContent = mensagem;
+  toast.classList.add('visivel');
+  setTimeout(() => toast.classList.remove('visivel'), 2200);
+}
+
+function exportarProgresso() {
+  const dado = localStorage.getItem(CHAVE_STORAGE);
+  if (!dado) {
+    alert('Ainda não há progresso para exportar. Responda pelo menos uma questão primeiro.');
+    return;
+  }
+  const blob = new Blob([dado], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const data = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+  a.href = url;
+  a.download = `progresso_simulado_mat_cap5_${data}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarToast('📥 Progresso exportado!');
+}
+
+function importarProgresso(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const conteudo = e.target.result;
+      JSON.parse(conteudo);
+      if (confirm('Isso vai substituir o progresso atual pelo do arquivo. Continuar?')) {
+        localStorage.setItem(CHAVE_STORAGE, conteudo);
+        mostrarToast('📤 Progresso importado!');
+        setTimeout(() => window.location.reload(), 800);
+      }
+    } catch (err) {
+      alert('Arquivo inválido. Por favor, use um arquivo de progresso exportado anteriormente.');
+    }
+  };
+  reader.readAsText(arquivo);
+  event.target.value = '';
+}
+
+function zerarProgresso() {
+  if (!confirm('Tem certeza? Todo o progresso salvo será apagado e a página vai recarregar do zero.')) return;
+  localStorage.removeItem(CHAVE_STORAGE);
+  mostrarToast('🗑️ Progresso apagado!');
+  setTimeout(() => window.location.reload(), 800);
+}
+
+init();
+</script>
+</body>
+</html>
